@@ -1,7 +1,7 @@
-[
-  "Supermarket",
-  "Transport",
-  "Restaurants",
-  "Entertainment",
-  "Other"
-]
+{
+  "House": ["Rent", "Water", "Electricity"],
+  "Fun": ["Restaurants", "Hobbies", "Movies"],
+  "Transport": ["Bus", "Taxi", "Gasoline"],
+  "Other": []
+}
+

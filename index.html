@@ -17,7 +17,13 @@
 
   <label>Category
     <select id="category" required>
-      <option value="">Select category</option>
+      <!-- options will be added dynamically here -->
+    </select>
+  </label>
+
+  <label>Subcategory
+    <select id="subcategory" required>
+      <!-- options will be added dynamically here -->
     </select>
   </label>
 
@@ -37,8 +43,8 @@
 <script src="app.js"></script>
 
 <script type="module">
-  import { loadCategories } from './loadCategories.js';
-  loadCategories('category');
+  import { loadCategoriesAndSubcategories } from './loadCategories.js';
+  loadCategoriesAndSubcategories('category', 'subcategory');
 </script>
 
 </body>
