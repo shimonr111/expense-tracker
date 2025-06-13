@@ -1,5 +1,6 @@
 import { fixedAmounts } from './fixedAmounts.js';
 
+// This function responsible to load data from categories.json and load it in the combo boxes of category and subcategory
 export function loadCategoriesAndSubcategories(categoryId, subcategoryId, jsonPath = 'categories.json') {
   fetch(jsonPath)
     .then(response => response.json())
