@@ -17,7 +17,7 @@ form.addEventListener('submit', e => {
   const time = now.toTimeString().split(' ')[0]; // e.g., "14:35:22"
 
   // If one of the fields empty then notify about that
-  if (!amount || !category || !subcategory) {
+  if (amount === "" || isNaN(amount) || !category || !subcategory) {
     showMessage("Please enter amount and select category", true);
     return;
   }
