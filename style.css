@@ -35,4 +35,7 @@ button:disabled {
 #amount {
   font-size: 16px;
 }
-
+#exportToExcelBtn {
+  background-color: #217346; /* Excel green */
+  color: white;
+}

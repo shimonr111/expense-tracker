@@ -12,3 +12,21 @@
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 const auth = firebase.auth();
+
+const signInBtn = document.getElementById("signInBtn");
+const saveExpenseBtn = document.getElementById("saveExpenseBtn");
+
+auth.onAuthStateChanged((user) => {
+  if (user) {
+    console.log("User is signed in:", user.displayName, user.email);
+    saveExpenseBtn.disabled = false;
+    exportToExcelBtn.disabled = false;
+    signInBtn.disabled = true;
+  } else {
+    console.log("No user is signed in.");
+    saveExpenseBtn.disabled = true;
+    exportToExcelBtn.disabled = true;
+    signInBtn.disabled = false;
+  }
+});
+

@@ -17,35 +17,27 @@
 
   <label>Category
     <select id="category" required>
-      <!-- options will be added dynamically here -->
     </select>
   </label>
 
   <label>Subcategory
     <select id="subcategory" required>
-      <!-- options will be added dynamically here -->
     </select>
   </label>
 
-  <label>Note
-    <textarea id="note" rows="2" placeholder="Optional"></textarea>
-  </label>
-
-  <button type="submit">Save Expense</button>
-
-  <button onclick="signInWithGoogle()">Sign in with Google</button>
+  <button id="saveExpenseBtn" type="submit">Save Expense</button>
+  <button id="exportToExcelBtn" type="button" onclick="exportToExcel()">Export month to Excel file</button>
+  <button id="signInBtn" type="button" onclick="signInWithGoogle()">Sign in with Google</button>
 </form>
 
 <div class="message" id="message"></div>
 
-<!--script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script-->
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 <script src="firebase-config.js"></script>
 <script src="utils.js"></script>
-<script src="app.js"></script>
+<script type="module" src="app.js"></script>
 
 <script type="module">
   import { loadCategoriesAndSubcategories } from './loadCategories.js';
