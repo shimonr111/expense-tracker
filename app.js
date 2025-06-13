@@ -6,15 +6,16 @@ form.addEventListener('submit', e => {
 
   const amount = parseFloat(document.getElementById('amount').value);
   const category = document.getElementById('category').value;
+  const subcategory = document.getElementById('subcategory').value;
   const note = document.getElementById('note').value;
   const timestamp = new Date().toISOString();
 
-  if (!amount || !category) {
+  if (!amount || !category || !subcategory) {
     showMessage("Please enter amount and select category", true);
     return;
   }
 
-  const expenseRef = db.ref('expenses/' + category);
+  const expenseRef = db.ref('expenses/' + category + '/' + subcategory);
 
   expenseRef.once('value')
     .then(snapshot => {
@@ -24,6 +25,7 @@ form.addEventListener('submit', e => {
       const expenseData = {
         amount: newAmount,
         category,
+        subcategory,
         note,
         timestamp
       };
@@ -31,7 +33,7 @@ form.addEventListener('submit', e => {
       return expenseRef.set(expenseData);
     })
     .then(() => {
-      showMessage("Expense saved (updated) successfully!", false);
+      showMessage(`Expense for ${subcategory} of ${amount.toFixed(2)} ILS saved successfully!`, false);
       form.reset();
     })
     .catch(error => {

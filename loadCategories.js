@@ -1,5 +1,3 @@
-// Assume categories.json has the structure shown above
-
 export function loadCategoriesAndSubcategories(categoryId, subcategoryId, jsonPath = 'categories.json') {
   fetch(jsonPath)
     .then(response => response.json())
