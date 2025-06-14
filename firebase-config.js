@@ -18,6 +18,7 @@ const auth = firebase.auth();
 // Get DOM elements of buttons
 const signInBtn = document.getElementById("signInBtn");
 const saveExpenseBtn = document.getElementById("saveExpenseBtn");
+const exportToExcelBtn = document.getElementById("exportToExcelBtn");
 
 auth.onAuthStateChanged((user) => {
   if (user) { // If the user is signed in to its Google account then disable the 'Sign in with Google' button
