@@ -60,6 +60,7 @@ form.addEventListener('submit', e => {
     .then(() => {
       // Show success message and reset the form
       showMessage(`Expense for ${subcategory} of ${amount.toFixed(2)} ILS saved successfully!`, false);
+      document.getElementById("subcategory").innerHTML = ""; // clear this combobox
       form.reset();
     })
     .catch(error => {

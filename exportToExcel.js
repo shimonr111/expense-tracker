@@ -1,30 +1,4 @@
-// This function is responsible to display the feedback message after the user click on 'Save Expense' button
-function showMessage(msg, isError) {
-  const positiveColors = ["green", "blue", "darkorange", "teal", "purple", "dodgerblue", "mediumseagreen"];
-  const randomColor = positiveColors[Math.floor(Math.random() * positiveColors.length)];
-  const messageDiv = document.getElementById('message');
-  messageDiv.style.color = randomColor;
-  messageDiv.textContent = msg;
-  messageDiv.style.color = isError ? "red" : randomColor;
-}
-
-// This functions responsible for implementing the process of login to Google account, after 'Sign in with Google' clicked
-function signInWithGoogle() {
-  const provider = new firebase.auth.GoogleAuthProvider();
-  auth.signInWithPopup(provider)
-    .then((result) => {
-      const user = result.user;
-      console.log("User signed in:", user.displayName, user.email);
-      // Write user data to database:
-      db.ref("users/" + user.uid).set({
-        name: user.displayName,
-        email: user.email
-      });
-    })
-    .catch((error) => {
-      console.error("Google Sign-In Error:", error.message);
-    });
-}
+import { orderedCategories } from './orderedCategories.js';
 
 // This function responsible to produce excel file report about the expenses, after 'Export month to Excel file' button clicked
 function exportToExcel() {
@@ -39,13 +13,17 @@ function exportToExcel() {
 
     let year = null;
     let month = null;
+    let rowIndex = 0;
+    let counter = 0;
 
     const worksheet = {};
-    let rowIndex = 1;  // Excel rows start at 1
+    //let rowIndex = 1;  // Excel rows start at 1
     const maxLengths = [0, 0]; // For columns A, B
 
     for (const category in data) {
       const subcategories = data[category];
+      rowIndex = orderedCategories.indexOf(category) + 1
+      console.log(rowIndex)
       // Write category name in first column (A)
       worksheet[`A${rowIndex}`] = { v: category, t: 's' };
       // Write " - " in columns B of category row
@@ -54,11 +32,12 @@ function exportToExcel() {
       maxLengths[0] = Math.max(maxLengths[0], category.length);
       maxLengths[1] = Math.max(maxLengths[1], 3); // length of " - "
 
-      rowIndex++;
+      counter++;
 
       for (const subcategory in subcategories) {
         const expense = subcategories[subcategory];
-
+        rowIndex = orderedCategories.indexOf(subcategory) + 1
+        console.log(rowIndex)
         // Set year and month from first expense only
         if (year === null && month === null) {
           year = expense.year;
@@ -73,12 +52,12 @@ function exportToExcel() {
         maxLengths[0] = Math.max(maxLengths[0], subcategory.length);
         maxLengths[1] = Math.max(maxLengths[1], worksheet[`B${rowIndex}`].v.length);
 
-        rowIndex++;
+        counter++;
       }
     }
 
     // Define worksheet range
-    worksheet['!ref'] = `A1:B${rowIndex - 1}`;
+    worksheet['!ref'] = `A1:B${counter}`;
     // Set column widths based on maxLengths (add some padding)
     worksheet['!cols'] = maxLengths.map(len => ({ wch: len + 1 }));
 
@@ -109,3 +88,5 @@ function getMonthName(monthNumber) {
   date.setMonth(monthNumber - 1); // JS months are 0-based
   return date.toLocaleString('en-US', { month: 'long' }); // e.g., "June"
 }
+
+document.getElementById("exportToExcelBtn").addEventListener("click", exportToExcel);

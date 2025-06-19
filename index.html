@@ -26,7 +26,7 @@
   </label>
 
   <button id="saveExpenseBtn" type="submit">Save Expense</button>
-  <button id="exportToExcelBtn" type="button" onclick="exportToExcel()">Export month to Excel file</button>
+  <button id="exportToExcelBtn" type="button">Export month to Excel file</button>
   <button id="signInBtn" type="button" onclick="signInWithGoogle()" disabled>Sign in with Google</button>
 </form>
 
@@ -37,8 +37,9 @@
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="firebase-config.js"></script>
-<script src="utils.js"></script>
+<script src="helpFunctions.js"></script>
 <script type="module" src="saveExpenseLogic.js"></script>
+<script type="module" src="exportToExcel.js"></script>
 
 <script type="module">
   import { loadCategoriesAndSubcategories } from './loadCategories.js';
