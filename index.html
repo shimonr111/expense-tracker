@@ -4,7 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Expense Tracker</title>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
 </head>
 <body>
 
@@ -32,17 +33,17 @@
 
 <div class="message" id="message"></div>
 
+<script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-<script src="firebase-config.js"></script>
-<script src="helpFunctions.js"></script>
-<script type="module" src="saveExpenseLogic.js"></script>
-<script type="module" src="exportToExcel.js"></script>
+<script src="/js/firebase-config.js"></script>
+<script src="/js/helpFunctions.js"></script>
+<script type="module" src="/js/saveExpenseLogic.js"></script>
+<script type="module" src="/js/exportToExcel.js"></script>
 
 <script type="module">
-  import { loadCategoriesAndSubcategories } from './loadCategories.js';
+  import { loadCategoriesAndSubcategories } from './js/loadCategories.js';
   loadCategoriesAndSubcategories('category', 'subcategory');
 </script>
 

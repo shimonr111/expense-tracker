@@ -1,4 +1,4 @@
-import { orderedCategories } from './orderedCategories.js';
+import { orderedCategories } from '../data/orderedCategories.js';
 
 // This function responsible to produce excel file report about the expenses, after 'Export month to Excel file' button clicked
 function exportToExcel() {
@@ -23,7 +23,6 @@ function exportToExcel() {
     for (const category in data) {
       const subcategories = data[category];
       rowIndex = orderedCategories.indexOf(category) + 1
-      console.log(rowIndex)
       // Write category name in first column (A)
       worksheet[`A${rowIndex}`] = { v: category, t: 's' };
       // Write " - " in columns B of category row
@@ -37,7 +36,6 @@ function exportToExcel() {
       for (const subcategory in subcategories) {
         const expense = subcategories[subcategory];
         rowIndex = orderedCategories.indexOf(subcategory) + 1
-        console.log(rowIndex)
         // Set year and month from first expense only
         if (year === null && month === null) {
           year = expense.year;
