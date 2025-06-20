@@ -1,4 +1,4 @@
-import { fixedAmounts } from './fixedAmounts.js';
+import { fixedAmounts } from '../data/fixedAmounts.js';
 const form = document.getElementById('expenseForm');
 const messageDiv = document.getElementById('message');
 
