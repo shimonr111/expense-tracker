@@ -39,3 +39,18 @@ button:disabled {
   background-color: #217346; /* Excel green */
   color: white;
 }
+
+#version-label {
+      position: fixed;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 5px 10px;
+      background-color: #f0f0f0;
+      font-size: 14px;
+      color: #333;
+      border-top: 1px solid #ccc;
+      width: 100%;
+      text-align: center;
+      font-family: Arial, sans-serif;
+}
