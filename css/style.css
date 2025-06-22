@@ -39,7 +39,10 @@ button:disabled {
   background-color: #217346; /* Excel green */
   color: white;
 }
-
+#exportToExcelBtn:disabled {
+  background: #aaa;
+  cursor: not-allowed;
+}
 #version-label {
       position: fixed;
       bottom: 0;
@@ -53,4 +56,7 @@ button:disabled {
       width: 100%;
       text-align: center;
       font-family: Arial, sans-serif;
+}
+h1 {
+  text-align: center;
 }
