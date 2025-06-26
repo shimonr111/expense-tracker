@@ -1,9 +1,9 @@
-import { orderedCategories } from '../data/orderedCategories.js';
+import { expensesData } from '../data/expensesDataBase.js';
 
 // This function responsible to produce excel file report about the expenses, after 'Export month to Excel file' button clicked
 function exportToExcel() {
-  const expensesRef = firebase.database().ref("expenses"); // reference to expenses object in the DB
-  expensesRef.once("value")
+  const expensesRef = firebase.database().ref("expenses"); // reference to expenses objects from the DB
+  expensesRef.once("value") // Reading the data from the DB
   .then(snapshot => {
     const data = snapshot.val();
     if (!data) {
@@ -14,28 +14,27 @@ function exportToExcel() {
     let year = null;
     let month = null;
     let rowIndex = 0;
-    let counter = 0;
 
     const worksheet = {};
-    //let rowIndex = 1;  // Excel rows start at 1
     const maxLengths = [0, 0]; // For columns A, B
 
+    // Iterate over the data and insert it (both categories and subcategories with their amounts from the DB)
     for (const category in data) {
       const subcategories = data[category];
-      rowIndex = orderedCategories.indexOf(category) + 1
+      const categoryItem = expensesData.find(item => item.category === category);
+      rowIndex = categoryItem.row - 1;
       // Write category name in first column (A)
       worksheet[`A${rowIndex}`] = { v: category, t: 's' };
       // Write " - " in columns B of category row
       worksheet[`B${rowIndex}`] = { v: ' - ', t: 's' };
-
+    
       maxLengths[0] = Math.max(maxLengths[0], category.length);
       maxLengths[1] = Math.max(maxLengths[1], 3); // length of " - "
 
-      counter++;
-
       for (const subcategory in subcategories) {
         const expense = subcategories[subcategory];
-        rowIndex = orderedCategories.indexOf(subcategory) + 1
+        const subCategoryItem = expensesData.find(item => item.subcategory === subcategory);
+        rowIndex = subCategoryItem.row
         // Set year and month from first expense only
         if (year === null && month === null) {
           year = expense.year;
@@ -49,13 +48,16 @@ function exportToExcel() {
 
         maxLengths[0] = Math.max(maxLengths[0], subcategory.length);
         maxLengths[1] = Math.max(maxLengths[1], worksheet[`B${rowIndex}`].v.length);
-
-        counter++;
       }
     }
 
     // Define worksheet range
-    worksheet['!ref'] = `A1:B${counter}`;
+    // Get all keys that look like cell addresses (e.g., A2, B37)
+    const usedRows = Object.keys(worksheet)
+      .filter(key => /^[A-Z]+\d+$/.test(key))
+      .map(key => parseInt(key.match(/\d+/)[0]));
+    const maxRow = Math.max(...usedRows);
+    worksheet['!ref'] = `A1:B${maxRow}`;
     // Set column widths based on maxLengths (add some padding)
     worksheet['!cols'] = maxLengths.map(len => ({ wch: len + 1 }));
 
@@ -78,13 +80,6 @@ function exportToExcel() {
     console.error("Error exporting data:", error);
     alert("Error exporting data: " + error.message);
   });
-}
-
-// This function get month number, and return month name
-function getMonthName(monthNumber) {
-  const date = new Date();
-  date.setMonth(monthNumber - 1); // JS months are 0-based
-  return date.toLocaleString('en-US', { month: 'long' }); // e.g., "June"
 }
 
 document.getElementById("exportToExcelBtn").addEventListener("click", exportToExcel);

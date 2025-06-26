@@ -25,3 +25,18 @@ function signInWithGoogle() {
       console.error("Google Sign-In Error:", error.message);
     });
 }
+
+// This function get month number, and return month name
+function getMonthName(monthNumber) {
+  const date = new Date();
+  date.setMonth(monthNumber - 1); // JS months are 0-based
+  return date.toLocaleString('en-US', { month: 'long' }); // e.g., "June"
+}
+
+function getCurrentDateInfo() {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = now.getMonth() + 1;
+  const time = now.toTimeString().split(' ')[0];
+  return [year, month, time];
+}
