@@ -15,53 +15,54 @@ function exportToExcel() {
     let month = null;
     let rowIndex = 0;
 
-    const worksheet = {};
-    const maxLengths = [0, 0]; // For columns A, B
+    const worksheet = {}; // Empty object for the worksheet 
+    const maxLengths = [0, 0]; // For columns A, B, to define later the maximum width of the column
+    let currentRow = 1;
+
+    // Group subcategories under each category (it keeps order when iterating later, by the insertion order)
+    const grouped = {};
+    expensesData.forEach(({ category, subcategory }) => {
+      if (!grouped[category]) {
+        grouped[category] = new Set();
+      }
+      grouped[category].add(subcategory);
+    });
 
     // Iterate over the data and insert it (both categories and subcategories with their amounts from the DB)
-    for (const category in data) {
+    for (const category in grouped) {
+      if (!data[category]) continue;
       const subcategories = data[category];
-      const categoryItem = expensesData.find(item => item.category === category);
-      rowIndex = categoryItem.row - 1;
-      // Write category name in first column (A)
-      worksheet[`A${rowIndex}`] = { v: category, t: 's' };
-      // Write " - " in columns B of category row
-      worksheet[`B${rowIndex}`] = { v: ' - ', t: 's' };
-    
-      maxLengths[0] = Math.max(maxLengths[0], category.length);
-      maxLengths[1] = Math.max(maxLengths[1], 3); // length of " - "
+      worksheet[`A${currentRow}`] = { v: category, t: 's' }; // Write category name in first column (A)
+      worksheet[`B${currentRow}`] = { v: ' - ', t: 's' }; // Write " - " in columns B of category row
+      updateMaxColumnWidths(maxLengths, category, ' - ');  // Update maximum width column
+      currentRow++;
 
-      for (const subcategory in subcategories) {
+      for (const subcategory of grouped[category]) {
         const expense = subcategories[subcategory];
-        const subCategoryItem = expensesData.find(item => item.subcategory === subcategory);
-        rowIndex = subCategoryItem.row
-        // Set year and month from first expense only
+        if (!expense) continue; // skip if not found in DB
+        const subCategoryItem = expensesData.find(item => item.subcategory === subcategory); // find item from the imported list, based on the subcategory
+        rowIndex = subCategoryItem.row // This is its row number in the XLSX file
+        // Set year and month from first expense only - use it later for the name XLSX file
         if (year === null && month === null) {
           year = expense.year;
-          month = getMonthName(parseInt(expense.month)); // Your function for month name
+          month = getMonthName(parseInt(expense.month));
         }
-
-        // Subcategory in column A
-        worksheet[`A${rowIndex}`] = { v: subcategory, t: 's' };
-        // Amount in column B
-        worksheet[`B${rowIndex}`] = { v: parseFloat(expense.amount).toFixed(2), t: 'n' };
-
-        maxLengths[0] = Math.max(maxLengths[0], subcategory.length);
-        maxLengths[1] = Math.max(maxLengths[1], worksheet[`B${rowIndex}`].v.length);
+        worksheet[`A${currentRow}`] = { v: subcategory, t: 's' }; // Subcategory in column A
+        worksheet[`B${currentRow}`] = { v: parseFloat(expense.amount).toFixed(2), t: 'n' }; // Amount in column B
+        updateMaxColumnWidths(maxLengths, subcategory, worksheet[`B${currentRow}`].v.toString()); // Update maximum width column
+        currentRow++;
       }
     }
 
-    // Define worksheet range
-    // Get all keys that look like cell addresses (e.g., A2, B37)
+    // Set the column widths for columns A and B based on the longest string
     const usedRows = Object.keys(worksheet)
       .filter(key => /^[A-Z]+\d+$/.test(key))
       .map(key => parseInt(key.match(/\d+/)[0]));
     const maxRow = Math.max(...usedRows);
     worksheet['!ref'] = `A1:B${maxRow}`;
-    // Set column widths based on maxLengths (add some padding)
     worksheet['!cols'] = maxLengths.map(len => ({ wch: len + 1 }));
 
-    // 🟢 Use custom workbook with RTL view
+    // Create a workbook object, and set the view to RTL
     const workbook = {
       SheetNames: ['Expenses'],
       Sheets: {
@@ -72,7 +73,7 @@ function exportToExcel() {
       }
     };
 
-    // Save the file
+    // Generate the file
     const fileName = `Expenses_Report_${month}_${year}.xlsx`;
     XLSX.writeFile(workbook, fileName);
   })

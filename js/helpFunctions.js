@@ -33,10 +33,16 @@ function getMonthName(monthNumber) {
   return date.toLocaleString('en-US', { month: 'long' }); // e.g., "June"
 }
 
+// This function parse and get the relevant date fields
 function getCurrentDateInfo() {
   const now = new Date();
   const year = now.getFullYear();
   const month = now.getMonth() + 1;
   const time = now.toTimeString().split(' ')[0];
   return [year, month, time];
+}
+
+function updateMaxColumnWidths(maxLengths, colAValue, colBValue) {
+  maxLengths[0] = Math.max(maxLengths[0], colAValue.length);
+  maxLengths[1] = Math.max(maxLengths[1], colBValue.length);
 }
