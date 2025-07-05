@@ -28,6 +28,9 @@ module.exports = {
     new HtmlWebpackPlugin({
       template: './public/index.html',     // Base HTML file
     }),
+    new webpack.DefinePlugin({
+      'process.env.PUBLIC_URL': JSON.stringify(process.env.PUBLIC_URL || '/expense-tracker'),
+    })
   ],
   devServer: {
     historyApiFallback: true,
