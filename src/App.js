@@ -90,9 +90,11 @@ const AppRoutes = () => {
   );
 };
 
+const basename = process.env.PUBLIC_URL || '/expense-tracker';
+
 // Wrap everthing in Router
 const App = () => (
-  <Router>
+  <Router basename={basename}>
     <AppRoutes />
   </Router>
 );
