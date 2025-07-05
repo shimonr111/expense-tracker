@@ -1,0 +1,31 @@
+// This function is responsible to display the feedback message after the user click on 'Save Expense' button
+export function showMessage(msg, isError) {
+  const positiveColors = ["green", "blue", "darkorange", "teal", "purple", "dodgerblue", "mediumseagreen"];
+  const randomColor = positiveColors[Math.floor(Math.random() * positiveColors.length)];
+  const messageDiv = document.getElementById('message');
+  messageDiv.style.color = randomColor;
+  messageDiv.textContent = msg;
+  messageDiv.style.color = isError ? "red" : randomColor;
+}
+
+// This function get month number, and return month name
+export function getMonthName(monthNumber) {
+  const date = new Date();
+  date.setMonth(monthNumber - 1); // JS months are 0-based
+  return date.toLocaleString('en-US', { month: 'long' }); // e.g., "June"
+}
+
+// This function parse and get the relevant date fields
+export function getCurrentDateInfo() {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = now.getMonth() + 1;
+  const time = now.toTimeString().split(' ')[0];
+  return [year, month, time];
+}
+
+// This function update the max column witdth
+export function updateMaxColumnWidths(maxLengths, colAValue, colBValue) {
+  maxLengths[0] = Math.max(maxLengths[0], colAValue.length);
+  maxLengths[1] = Math.max(maxLengths[1], colBValue.length);
+}

@@ -1,0 +1,163 @@
+body {
+  font-family: Arial, sans-serif;
+  max-width: 400px;
+  margin: 20px auto;
+  padding: 10px;
+}
+label {
+  display: block;
+  margin-top: 15px;
+}
+input, select, textarea {
+  width: 100%;
+  padding: 8px;
+  margin-top: 5px;
+  box-sizing: border-box;
+}
+button {
+  margin-top: 20px;
+  padding: 10px;
+  width: 100%;
+  background: #007bff;
+  color: white;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+}
+button:disabled {
+  background: #aaa;
+  cursor: not-allowed;
+}
+.message {
+  margin-top: 15px;
+  font-weight: bold;
+}
+#amount {
+  font-size: 16px;
+}
+#exportToExcelBtn {
+  background-color: #217346; /* Excel green */
+  color: white;
+}
+#exportToExcelBtn:disabled {
+  background: #aaa;
+  cursor: not-allowed;
+}
+#version-label {
+      position: fixed;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 5px 10px;
+      background-color: #f0f0f0;
+      font-size: 14px;
+      color: #333;
+      border-top: 1px solid #ccc;
+      width: 100%;
+      text-align: center;
+      font-family: Arial, sans-serif;
+}
+h1 {
+  text-align: center;
+  color: #2c3e50;
+  font-size: 2.5rem;
+  margin-top: 20px;
+  margin-bottom: 30px;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+}
+
+ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: #333;
+}
+
+li {
+  float: left;
+}
+
+li a {
+  display: block;
+  color: white;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+}
+
+/* Change the link color to #111 (black) on hover */
+li a:hover {
+  background-color: #111;
+}
+
+li a.logout-link,
+li a.logout-link.active {
+  background-color: #c75c5c; /* soft, warm red */
+  color: white;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+
+li a.logout-link:hover {
+  background-color: #a24b4b; /* slightly darker on hover */
+  color: white;
+}
+
+/*Login Page*/
+.login-page {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #4b6cb7, #182848);
+  color: white;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  text-align: center;
+  padding: 20px;
+  border-radius: 12px;
+  margin: 40px auto;
+  max-width: 400px;
+  box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+}
+
+.login-page h2 {
+  margin-bottom: 12px;
+  font-size: 2.2rem;
+}
+
+.login-page p {
+  margin-bottom: 24px;
+  font-size: 1.1rem;
+  opacity: 0.85;
+}
+
+.login-button {
+  background-color: #4285f4; /* Google Blue */
+  border: none;
+  color: white;
+  padding: 14px 28px;
+  font-size: 1.1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  box-shadow: 0 4px 8px rgb(66 133 244 / 0.5);
+}
+
+.login-button:hover {
+  background-color: #3367d6;
+}
+
+.loading-message {
+  font-size: 1.2rem;
+  color: #333;
+  text-align: center;
+  margin-top: 50px;
+}
+
+.active-link {
+  border-bottom: 4px solid #007bff;
+}
+
+
+
