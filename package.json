@@ -8,11 +8,11 @@
     "start": "webpack serve --mode development",
     "build": "webpack --mode production",
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d build"
+    "deploy": "gh-pages -d dist"
   },
   "repository": {
-  "type": "git",
-  "url": "https://github.com/shimonr111/expense-tracker"
+    "type": "git",
+    "url": "https://github.com/shimonr111/expense-tracker"
   },
   "keywords": [],
   "author": "",
