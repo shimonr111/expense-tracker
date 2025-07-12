@@ -90,7 +90,8 @@ const AppRoutes = () => {
   );
 };
 
-const basename = process.env.PUBLIC_URL || '/expense-tracker';
+const isDev = process.env.NODE_ENV === 'development';
+const basename = isDev ? '/' : '/expense-tracker';
 
 // Wrap everthing in Router
 const App = () => (
