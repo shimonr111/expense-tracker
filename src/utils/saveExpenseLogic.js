@@ -1,5 +1,5 @@
 import { ref, get, set } from 'firebase/database';
-import { db } from './firebase-config.js';
+import { db, auth} from './firebase-config.js';
 import { showMessage, getCurrentDateInfo } from './helpFunctions.js';
 
 const form = document.getElementById('expenseForm');
@@ -19,6 +19,7 @@ export async function submitExpense(formData, isFixedAmount) {
     return;
   }
 
+  // Set the update expense in the Firebase DB under the specified category
   try {
     const expenseRef = ref(db, `expenses/${category}/${subcategory}`);
     const snapshot = await get(expenseRef);
@@ -33,11 +34,19 @@ export async function submitExpense(formData, isFixedAmount) {
       time,
       "fixed amount": isFixedAmount
   };
-
   await set(expenseRef, expenseData);
 
-  console.log(subcategory)
-  console.log(amount)
+  // Set the update expense in the Firebase DB under logs
+  const logKey = `${time.replace(/:/g, '-')}-${month}-${year}`;
+  const logRef = ref(db, `log/${logKey}`);
+  const logData = {
+    amount,
+    category,
+    subcategory,
+    user: auth.currentUser.email
+  };
+  await set(logRef, logData);
+
   showMessage(`Expense for ${subcategory} of ${amount.toFixed(2)} ILS saved successfully!`, false);
     return true;  // success
   } catch (error) {

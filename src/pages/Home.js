@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { loadCategoriesAndSubcategories } from '../utils/loadCategories.js';
 import { submitExpense } from '../utils/saveExpenseLogic.js';
 import { exportToExcel } from '../utils/exportToExcel.js';
+import { exportLogFile } from '../utils/exportLogFile.js';
 import { Version } from '../App.js';
 
 // Home Page Component 
@@ -47,6 +48,7 @@ const Home = () => {
         </label>
         <button id="saveExpenseBtn" type="submit">Save Expense</button>
         <button id="exportToExcelBtn" type="button" onClick={exportToExcel}>Export month to Excel file</button>
+        <button id="exportLogBtn" type="button" onClick={exportLogFile}>Export logs file</button>
       </form>
       <div className="message" id="message"></div>
       <div id="version-label">{Version}</div>

@@ -24,10 +24,6 @@ button {
   font-size: 16px;
   cursor: pointer;
 }
-button:disabled {
-  background: #aaa;
-  cursor: not-allowed;
-}
 .message {
   margin-top: 15px;
   font-weight: bold;
@@ -39,9 +35,9 @@ button:disabled {
   background-color: #217346; /* Excel green */
   color: white;
 }
-#exportToExcelBtn:disabled {
-  background: #aaa;
-  cursor: not-allowed;
+#exportLogBtn {
+  background-color: rgb(108, 21, 190); /* Excel green */
+  color: white;
 }
 #version-label {
       position: fixed;

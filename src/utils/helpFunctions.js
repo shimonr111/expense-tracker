@@ -20,7 +20,10 @@ export function getCurrentDateInfo() {
   const now = new Date();
   const year = now.getFullYear();
   const month = now.getMonth() + 1;
-  const time = now.toTimeString().split(' ')[0];
+  const timeOnly = now.toTimeString().split(' ')[0]; // "HH:mm:ss"
+  const dayOfWeek = now.toLocaleDateString('en-US', { weekday: 'long' }); // "Saturday"
+  const dayOfMonth = now.getDate(); // 12
+  const time = `${timeOnly} at ${dayOfWeek} ${dayOfMonth}`;
   return [year, month, time];
 }
 

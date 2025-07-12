@@ -1,7 +1,6 @@
-import { getMonthName, showMessage } from './helpFunctions.js';
+import { getMonthName, showMessage, updateMaxColumnWidths, getCurrentDateInfo} from './helpFunctions.js';
 import { db } from './firebase-config.js';  
 import { ref, get } from 'firebase/database';
-import { updateMaxColumnWidths, getCurrentDateInfo } from './helpFunctions.js';
 import * as XLSX from 'xlsx';
 
 // This function responsible to produce excel file report about the expenses, after 'Export month to Excel file' button clicked
@@ -58,6 +57,7 @@ export function exportToExcel() {
     month = getMonthName(month);
     const fileName = `Expenses_Report_${month}_${year}.xlsx`;
     XLSX.writeFile(workbook, fileName);
+    showMessage('Expenses report file exported successfully!', false);
   })
   .catch(error => {
     console.error("Error exporting data:", error);
