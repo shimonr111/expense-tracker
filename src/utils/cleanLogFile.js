@@ -12,6 +12,11 @@ export async function cleanLogFile() {
       return;
     }
 
+    const userConfirmed = confirm("Are you sure you want to delete the log data?");
+      if (!userConfirmed) {
+        return; // User cancelled the reset
+      }
+
     await remove(logRef); // <-- this deletes all data under 'log'
     showMessage('Log data cleaned successfully!', false);
   } catch (error) {
