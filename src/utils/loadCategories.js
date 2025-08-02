@@ -68,6 +68,12 @@ function checkIfResetAllAmounts(expensesRef) {
     const monthInDatabase = sampleSubcategory.month;
     // If month does not match → reset all amounts
     if (currentMonth !== monthInDatabase) {
+
+      const userConfirmed = confirm("It looks like it's a new month. Do you want to reset all non-fixed expenses?");
+      if (!userConfirmed) {
+        return; // User cancelled the reset
+      }
+
       const updates = [];
 
       for (const category in data) {

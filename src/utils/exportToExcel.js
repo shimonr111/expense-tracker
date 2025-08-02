@@ -16,6 +16,7 @@ export function exportToExcel() {
     const worksheet = {}; // Empty object for the worksheet 
     const maxLengths = [0, 0]; // For columns A, B, to define later the maximum width of the column
     let currentRow = 1;
+    let totalAmount = 0;
 
     // Iterate over the data and insert it (both categories and subcategories with their amounts from the DB)
     for (const category in data) {
@@ -26,12 +27,18 @@ export function exportToExcel() {
       currentRow++;
       for (const subcategory in subcategories) {
         const amount = subcategories[subcategory]?.amount ?? 0;
+        const parsedAmount = parseFloat(amount).toFixed(2);
+        totalAmount += parseFloat(parsedAmount); //
         worksheet[`A${currentRow}`] = { v: subcategory, t: 's' }; // Subcategory in column A
         worksheet[`B${currentRow}`] = { v: parseFloat(amount).toFixed(2), t: 'n' }; // Amount in column B
         updateMaxColumnWidths(maxLengths, subcategory, worksheet[`B${currentRow}`].v.toString()); // Update maximum width column
         currentRow++;
       }
     }
+
+    worksheet[`A${currentRow}`] = { v: 'Total', t: 's' };
+    worksheet[`B${currentRow}`] = { v: totalAmount.toFixed(2), t: 'n' };
+    updateMaxColumnWidths(maxLengths, 'Total', totalAmount.toFixed(2));
 
     // Set the column widths for columns A and B based on the longest string
     const usedRows = Object.keys(worksheet)
