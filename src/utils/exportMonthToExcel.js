@@ -4,7 +4,7 @@ import { ref, get } from 'firebase/database';
 import * as XLSX from 'xlsx';
 
 // This function responsible to produce excel file report about the expenses, after 'Export month to Excel file' button clicked
-export function exportToExcel() {
+export function exportMonthToExcel() {
   const expensesRef = ref(db, "expenses");
    get(expensesRef).then(snapshot => {
     const data = snapshot.val();

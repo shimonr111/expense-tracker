@@ -26,6 +26,7 @@ export async function exportLogFile() {
         Category: data.category,
         Subcategory: data.subcategory,
         User: data.user,
+        Comment: data.comment,
         _sortDate: parseLogTimestamp(key)
       }))
       .sort((a, b) => a._sortDate - b._sortDate) // Sort chronologically
@@ -41,7 +42,8 @@ export async function exportLogFile() {
       { wch: 15 }, // Amount (column B)
       { wch: 15 }, // Category (column C)
       { wch: 15 },  // Subcategory (column D)
-      { wch: 15 }  // Subcategory (column E)
+      { wch: 15 },  // User (column E)
+      { wch: 15 }  // Comment (column F)
     ];
 
     const workbook = XLSX.utils.book_new();

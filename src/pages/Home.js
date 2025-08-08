@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { loadCategoriesAndSubcategories } from '../utils/loadCategories.js';
 import { submitExpense } from '../utils/saveExpenseLogic.js';
-import { exportToExcel } from '../utils/exportToExcel.js';
+import { exportMonthToExcel } from '../utils/exportMonthToExcel.js';
 import { exportLogFile } from '../utils/exportLogFile.js';
 import { cleanLogFile } from '../utils/cleanLogFile.js';
 import { Version } from '../App.js';
@@ -23,8 +23,9 @@ const Home = () => {
       category: e.target.category.value,
       subcategory: e.target.subcategory.value
     };
+    const comment = e.target.comment.value
     //Calls the imported function to submit the expense data asynchronously
-    const success = await submitExpense(formData, false);
+    const success = await submitExpense(formData, false, comment);
     if (success) {
       e.target.subcategory.innerHTML = ""; // clear subcategory options if needed
       e.target.reset();
@@ -36,21 +37,25 @@ const Home = () => {
       <h1>Add new expense</h1>
       <form id="expenseForm" onSubmit={handleSubmit}>
         <label>
-          Category
+          Category <span className="required">*</span>
           <select id="category" required></select>
         </label>
         <label>
-          Subcategory
+          Subcategory <span className="required">*</span>
           <select id="subcategory" required></select>
         </label>
         <label>
-          Amount
+          Amount <span className="required">*</span>
           <input type="number" step="0.01" id="amount" required />
         </label>
+        <label>
+          Comment
+          <input type="text" id="comment" />
+        </label>
         <button id="saveExpenseBtn" type="submit">Save Expense</button>
-        <button id="exportToExcelBtn" type="button" onClick={exportToExcel}>Export month to Excel file</button>
-        <button id="exportLogBtn" type="button" onClick={exportLogFile}>Export logs file</button>
-        <button id="cleanLogBtn" type="button" onClick={cleanLogFile}>Clean logs file</button>
+        <button id="exportMonthToExcelBtn" type="button" onClick={exportMonthToExcel}>Export month to Excel file</button>
+        <button id="exportLogBtn" type="button" onClick={exportLogFile}>Export logs to Excel file</button>
+        <button id="cleanLogBtn" type="button" onClick={cleanLogFile}>Clean logs data</button>
       </form>
       <div className="message" id="message"></div>
       <div id="version-label">{Version}</div>

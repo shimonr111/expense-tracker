@@ -6,7 +6,7 @@ const form = document.getElementById('expenseForm');
 
 // Event listener for the button saveExpenseBtn which is submit type
 // Logic of updating the DB implemented here
-export async function submitExpense(formData, isFixedAmount) {
+export async function submitExpense(formData, isFixedAmount, comment = null) {
 
   // Initialize fields that will get stored in the DB for each subcategory later
   let amount = parseFloat(formData.amount);
@@ -43,7 +43,8 @@ export async function submitExpense(formData, isFixedAmount) {
     amount,
     category,
     subcategory,
-    user: auth.currentUser.email
+    user: auth.currentUser.email,
+    comment
   };
   await set(logRef, logData);
 

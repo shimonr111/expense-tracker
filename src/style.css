@@ -8,6 +8,10 @@ label {
   display: block;
   margin-top: 15px;
 }
+.required {
+  color: red;
+  margin-left: 4px;
+}
 input, select, textarea {
   width: 100%;
   padding: 8px;
@@ -31,7 +35,7 @@ button {
 #amount {
   font-size: 16px;
 }
-#exportToExcelBtn {
+#exportMonthToExcelBtn {
   background-color: #217346; /* Excel green */
   color: white;
 }
