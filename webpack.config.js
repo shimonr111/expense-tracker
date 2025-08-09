@@ -1,5 +1,7 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const CopyPlugin = require('copy-webpack-plugin');
+const isProd = process.env.NODE_ENV === 'production';
 const webpack = require('webpack');
 
 module.exports = {
@@ -28,10 +30,19 @@ module.exports = {
   plugins: [
     new HtmlWebpackPlugin({
       template: './public/index.html',     // Base HTML file
+      templateParameters: {
+      PUBLIC_URL: isProd ? '/expense-tracker' : '',
+    },
     }),
     new webpack.DefinePlugin({
-      'process.env.PUBLIC_URL': JSON.stringify(process.env.PUBLIC_URL || '/expense-tracker'),
-    })
+      'process.env.PUBLIC_URL': JSON.stringify(isProd ? '/expense-tracker' : ''),
+    }),
+    new CopyPlugin({
+      patterns: [
+        { from: 'public/favicon.ico', to: '' },  // copy favicon.ico to dist root
+        { from: 'public/apple-icon.png', to: '' },
+      ],
+    }),
   ],
   devServer: {
     historyApiFallback: true,
