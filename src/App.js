@@ -100,5 +100,5 @@ const App = () => (
   </Router>
 );
 
-export const Version = "Version 1.0.22";
+export const Version = "Version 1.0.23";
 export default App;
