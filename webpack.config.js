@@ -10,6 +10,7 @@ module.exports = {
     path: path.resolve(__dirname, 'dist'),  // Output folder
     filename: 'bundle.js',                   // Output file
     clean: true,                            // Clean dist before build
+    publicPath: isProd ? '/expense-tracker/' : '/',
   },
   module: {
     rules: [
@@ -31,7 +32,7 @@ module.exports = {
     new HtmlWebpackPlugin({
       template: './public/index.html',     // Base HTML file
       templateParameters: {
-      PUBLIC_URL: isProd ? '/expense-tracker' : '',
+        PUBLIC_PATH: isProd ? '/expense-tracker/' : '/',
     },
     }),
     new webpack.DefinePlugin({
@@ -39,8 +40,8 @@ module.exports = {
     }),
     new CopyPlugin({
       patterns: [
-        { from: 'public/favicon.ico', to: '' },  // copy favicon.ico to dist root
-        { from: 'public/apple-icon.png', to: '' },
+        { from: 'public/favicon.ico', to: '.' },
+        { from: 'public/apple-icon.png', to: '.' },
       ],
     }),
   ],
@@ -51,5 +52,5 @@ module.exports = {
     open: true,
     hot: true,
   },
-  mode: 'development',
+  mode: isProd ? 'production' : 'development'
 };
