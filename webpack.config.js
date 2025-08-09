@@ -42,6 +42,7 @@ module.exports = {
       patterns: [
         { from: 'public/favicon.ico', to: '.' },
         { from: 'public/apple-icon.png', to: '.' },
+        { from: 'public/manifest.json', to: '.' }, 
       ],
     }),
   ],
