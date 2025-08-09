@@ -32,7 +32,7 @@ button {
   margin-top: 15px;
   font-weight: bold;
 }
-#amount {
+#amount, #comment {
   font-size: 16px;
 }
 #exportMonthToExcelBtn {
