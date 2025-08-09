@@ -5,8 +5,8 @@
   "homepage": "https://shimonr111.github.io/expense-tracker",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "webpack serve --mode development",
-    "build": "webpack --mode production && copy dist\\index.html dist\\404.html",
+    "start": "cross-env NODE_ENV=development webpack serve --mode development",
+    "build": "cross-env NODE_ENV=production webpack --mode production && copy dist\\index.html dist\\404.html",
     "predeploy": "npm run build",
     "deploy": "gh-pages -d dist"
   },
