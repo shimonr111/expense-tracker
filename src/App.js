@@ -8,6 +8,7 @@ import Edit from './pages/Edit';
 import About from './pages/About';
 import Login from './pages/Login';
 import Add from './pages/Add';
+import Settings from './pages/Settings';
 import NoPage from './pages/NoPage';
 import './style.css';
 
@@ -79,7 +80,6 @@ const AppRoutes = () => {
               <li><NavLink to="/home" className={({ isActive }) => (isActive ? 'active-link' : undefined)}>Home</NavLink></li>
               <li><NavLink to="/edit" className={({ isActive }) => (isActive ? 'active-link' : undefined)}>Edit</NavLink></li>
               <li><NavLink to="/add" className={({ isActive }) => (isActive ? 'active-link' : undefined)}>Add</NavLink></li>
-              <li><NavLink to="/about" className={({ isActive }) => (isActive ? 'active-link' : undefined)}>About</NavLink></li>
               <li><NavLink to="#" className="logout-link" onClick={(e) => { e.preventDefault(); handleLogout(); }}>Logout</NavLink></li>
             </>
           )}
@@ -94,6 +94,7 @@ const AppRoutes = () => {
         <Route path="/edit" element={<ProtectedRoute element={<Edit />} />} />
         <Route path="/add" element={<ProtectedRoute element={<Add />} />} />
         <Route path="/about" element={<ProtectedRoute element={<About />} />} />
+        <Route path="/settings" element={<ProtectedRoute element={<Settings />} />} />
         <Route path="*" element={<NoPage />} />
       </Routes>
     </>
@@ -110,5 +111,5 @@ const App = () => (
   </Router>
 );
 
-export const Version = "Version 1.0.25";
+export const Version = "Version 1.0.26";
 export default App;

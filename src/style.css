@@ -169,7 +169,7 @@ li a.logout-link:hover {
   top: 0;
   left: 0;
   height: 100%;
-  width: 200px;
+  width: 150px;
   background-color: #111;
   color: white;
   overflow-x: hidden;
@@ -196,23 +196,35 @@ li a.logout-link:hover {
 }
 
 .close-btn {
-  background: none;
+  position: relative;     /* position relative to sidebar */
+  left: 50%;              /* halfway across */
+  transform: translate(-50%, -50%); /* shift center of button to match coordinates */
+  width: 32px;
+  height: 32px;
   border: none;
+  border-radius: 50%;
+  background-color: #444;
   color: white;
-  font-size: 25px;
+  font-size: 20px;
   cursor: pointer;
-  display: block;
-  margin-left: auto;
-  margin-right: 10px;
+  transition: background 0.3s, transform 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
+.close-btn:hover {
+  background-color: #666;
+}
 
 .hamburger {
   background: none;
   border: none;
   cursor: pointer;
   flex-direction: column;
-  width: 42px;
+  width: 50px;
   padding: 0;
 }
+
+
 
