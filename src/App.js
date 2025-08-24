@@ -71,22 +71,20 @@ const AppRoutes = () => {
         <ul>
           {user && isAuthorized && ( // If logged in and authorized, show the sidebar nav
             <>
-              {/* Hamburger button */}
-              <li>
-                <button className="hamburger" onClick={() => setSidebarOpen(true)}>
-                  ☰
-                </button>
-              </li>
+              <li><NavLink to="#" onClick={(e) => {e.preventDefault(); setSidebarOpen(true);}}>☰</NavLink></li>
               <li><NavLink to="/home" className={({ isActive }) => (isActive ? 'active-link' : undefined)}>Home</NavLink></li>
               <li><NavLink to="/edit" className={({ isActive }) => (isActive ? 'active-link' : undefined)}>Edit</NavLink></li>
               <li><NavLink to="/add" className={({ isActive }) => (isActive ? 'active-link' : undefined)}>Add</NavLink></li>
-              <li><NavLink to="#" className="logout-link" onClick={(e) => { e.preventDefault(); handleLogout(); }}>Logout</NavLink></li>
             </>
           )}
         </ul>
       </nav>
 
-      <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+      <Sidebar 
+        isOpen={sidebarOpen} 
+        onClose={() => setSidebarOpen(false)} 
+        onLogout={handleLogout}   // 👈 pass logout function
+      />
 
       <Routes>
         <Route path="/" element={<Login />} />
@@ -111,5 +109,5 @@ const App = () => (
   </Router>
 );
 
-export const Version = "Version 1.0.26";
+export const Version = "Version 1.0.27";
 export default App;

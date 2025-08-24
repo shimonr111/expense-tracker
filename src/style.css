@@ -95,19 +95,6 @@ li a:hover {
   background-color: #111;
 }
 
-li a.logout-link,
-li a.logout-link.active {
-  background-color: #c75c5c; /* soft, warm red */
-  color: white;
-  font-weight: bold;
-  transition: background-color 0.3s ease;
-}
-
-li a.logout-link:hover {
-  background-color: #a24b4b; /* slightly darker on hover */
-  color: white;
-}
-
 /*Login Page*/
 .login-page {
   display: flex;

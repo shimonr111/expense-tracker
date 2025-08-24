@@ -4,7 +4,7 @@ import { Version } from '../App.js';
 // About Page Component 
 const About = () => (
   <div>
-    <h1>About Page</h1>
+    <h1>About</h1>
     <p>This app was developed to manage expenses easily and efficiently.</p>
     
     <hr style={{ margin: '30px 0' }} />

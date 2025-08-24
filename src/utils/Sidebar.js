@@ -2,7 +2,7 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
 
-const Sidebar = ({ isOpen, onClose }) => {
+const Sidebar = ({ isOpen, onClose, onLogout }) => {
 
   const handleLinkClick = () => {
     onClose(); // close sidebar
@@ -13,6 +13,11 @@ const Sidebar = ({ isOpen, onClose }) => {
       <button className="close-btn" onClick={onClose}>X</button>
       <NavLink to="/settings" className="sidebar-link" onClick={handleLinkClick}>Settings</NavLink>
       <NavLink to="/about" className="sidebar-link" onClick={handleLinkClick}>About</NavLink>
+      <NavLink to="#" className="sidebar-link" onClick={(e) => {
+          e.preventDefault();
+          onLogout();   // call logout
+          onClose();    // close sidebar after logout
+        }}>Logout</NavLink>
     </div>
   );
 };
