@@ -163,5 +163,56 @@ li a.logout-link:hover {
   border-bottom: 4px solid #007bff;
 }
 
+/* sidebar.css */
+.sidebar {
+  position: absolute; /* not fixed */
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 200px;
+  background-color: #111;
+  color: white;
+  overflow-x: hidden;
+  padding-top: 20px;
+  transition: transform 0.3s ease;
+  transform: translateX(-100%); /* hidden by default */
+  z-index: 1000;
+}
 
+.sidebar.open {
+  transform: translateX(0); /* visible when open */
+}
+
+.sidebar-link {
+  display: block;
+  padding: 10px 15px;
+  color: white;
+  text-decoration: none;
+  font-size: 18px;
+}
+
+.sidebar-link:hover {
+  background-color: #575757;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 25px;
+  cursor: pointer;
+  display: block;
+  margin-left: auto;
+  margin-right: 10px;
+}
+
+
+.hamburger {
+  background: none;
+  border: none;
+  cursor: pointer;
+  flex-direction: column;
+  width: 42px;
+  padding: 0;
+}
 

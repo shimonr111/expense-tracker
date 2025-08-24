@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, NavLink, Navigate, useLocation} from 'react-router-dom';
 import { auth, onAuthStateChanged, signOut } from './utils/firebase-config';
+import Sidebar from "./utils/Sidebar";
 import { getDatabase, ref, get } from 'firebase/database';
 import Home from './pages/Home';
 import Edit from './pages/Edit';
@@ -15,8 +16,8 @@ const AppRoutes = () => {
   const [user, setUser] = useState(null); // holds the currently logged-in user
   const [isAuthorized, setIsAuthorized] = useState(false); // whether the user is allowed (based on DB)
   const [loading, setLoading] = useState(true); // whether auth check is still in progress
-
   const location = useLocation(); // Gets the current route path (e.g "/")
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   // Side effect - it listens for changes in the Firebase authentication state (login/logout), so it will get triggered then
   // This side effect also triggered once, right after AppRoutes component is mounted
@@ -69,6 +70,12 @@ const AppRoutes = () => {
         <ul>
           {user && isAuthorized && ( // If logged in and authorized, show the sidebar nav
             <>
+              {/* Hamburger button */}
+              <li>
+                <button className="hamburger" onClick={() => setSidebarOpen(true)}>
+                  ☰
+                </button>
+              </li>
               <li><NavLink to="/home" className={({ isActive }) => (isActive ? 'active-link' : undefined)}>Home</NavLink></li>
               <li><NavLink to="/edit" className={({ isActive }) => (isActive ? 'active-link' : undefined)}>Edit</NavLink></li>
               <li><NavLink to="/add" className={({ isActive }) => (isActive ? 'active-link' : undefined)}>Add</NavLink></li>
@@ -78,6 +85,9 @@ const AppRoutes = () => {
           )}
         </ul>
       </nav>
+
+      <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+
       <Routes>
         <Route path="/" element={<Login />} />
         <Route path="/home" element={<ProtectedRoute element={<Home />} />} />
@@ -100,5 +110,5 @@ const App = () => (
   </Router>
 );
 
-export const Version = "Version 1.0.24";
+export const Version = "Version 1.0.25";
 export default App;
