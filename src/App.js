@@ -8,9 +8,11 @@ import Edit from './pages/Edit';
 import About from './pages/About';
 import Login from './pages/Login';
 import Add from './pages/Add';
+import Stats from './pages/Stats';
 import Settings from './pages/Settings';
 import NoPage from './pages/NoPage';
 import './style.css';
+import { FaHome, FaChartPie, FaEdit, FaPlus } from 'react-icons/fa';
 
 // App Routes component - managing the routing
 const AppRoutes = () => {
@@ -72,9 +74,26 @@ const AppRoutes = () => {
           {user && isAuthorized && ( // If logged in and authorized, show the sidebar nav
             <>
               <li><NavLink to="#" onClick={(e) => {e.preventDefault(); setSidebarOpen(true);}}>☰</NavLink></li>
-              <li><NavLink to="/home" className={({ isActive }) => (isActive ? 'active-link' : undefined)}>Home</NavLink></li>
-              <li><NavLink to="/edit" className={({ isActive }) => (isActive ? 'active-link' : undefined)}>Edit</NavLink></li>
-              <li><NavLink to="/add" className={({ isActive }) => (isActive ? 'active-link' : undefined)}>Add</NavLink></li>
+              <li>
+                <NavLink to="/home" className={({ isActive }) => isActive ? 'active-link' : undefined}>
+                  <FaHome style={{ marginRight: '2px' }} /> Home
+                </NavLink>
+              </li>
+              <li>
+                <NavLink to="/stats" className={({ isActive }) => isActive ? 'active-link' : undefined}>
+                  <FaChartPie style={{ marginRight: '2px' }} /> Stats
+                </NavLink>
+              </li>
+              <li>
+                <NavLink to="/edit" className={({ isActive }) => isActive ? 'active-link' : undefined}>
+                  <FaEdit style={{ marginRight: '2px' }} /> Edit
+                </NavLink>
+              </li>
+              <li>
+                <NavLink to="/add" className={({ isActive }) => isActive ? 'active-link' : undefined}>
+                  <FaPlus style={{ marginRight: '2px' }} /> Add
+                </NavLink>
+              </li>
             </>
           )}
         </ul>
@@ -83,12 +102,13 @@ const AppRoutes = () => {
       <Sidebar 
         isOpen={sidebarOpen} 
         onClose={() => setSidebarOpen(false)} 
-        onLogout={handleLogout}   // 👈 pass logout function
+        onLogout={handleLogout}
       />
 
       <Routes>
         <Route path="/" element={<Login />} />
         <Route path="/home" element={<ProtectedRoute element={<Home />} />} />
+        <Route path="/stats" element={<ProtectedRoute element={<Stats />} />} />
         <Route path="/edit" element={<ProtectedRoute element={<Edit />} />} />
         <Route path="/add" element={<ProtectedRoute element={<Add />} />} />
         <Route path="/about" element={<ProtectedRoute element={<About />} />} />
@@ -109,5 +129,5 @@ const App = () => (
   </Router>
 );
 
-export const Version = "Version 1.0.27";
+export const Version = "Version 1.0.28";
 export default App;

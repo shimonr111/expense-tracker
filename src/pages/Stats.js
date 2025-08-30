@@ -1,0 +1,99 @@
+import React, { useEffect, useState } from 'react';
+import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer, CartesianGrid, Cell, LabelList } from 'recharts';
+import { db } from '../utils/firebase-config.js';
+import { ref, get } from 'firebase/database';
+import { Version } from '../App.js';
+
+const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#AA46BE', '#FF5F7E'];
+
+const Stats = () => {
+  const [chartData, setChartData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [total, setTotal] = useState(0);
+
+  // Implemented in the background - right after the page is loaded
+  useEffect(() => {
+    const fetchExpenses = async () => {
+      try {
+        // Get reference to the expenses in the data base
+        const expensesRef = ref(db, 'expenses');
+        const snapshot = await get(expensesRef);
+
+        if (snapshot.exists()) {
+          const data = snapshot.val();
+          const categoryTotals = {};
+          let grandTotal = 0;
+
+          // Iterate over subcategories and calc the amount for each category, in addition calc the total amount
+          for (const category in data) {
+            const subcategories = data[category];
+            let categorySum = 0;
+
+            for (const subcategory in subcategories) {
+              const amount = subcategories[subcategory]?.amount ?? 0;
+              categorySum += parseFloat(amount) || 0;
+            }
+
+            categoryTotals[category] = (categoryTotals[category] || 0) + categorySum;
+            grandTotal += categorySum;
+          }
+
+          // Convert to recharts format
+          const formattedData = Object.entries(categoryTotals).map(([name, amount]) => ({
+            name,
+            amount: parseFloat(amount.toFixed(2))
+          }));
+
+          setChartData(formattedData);
+          setTotal(grandTotal.toFixed(2));
+        } else {
+          setChartData([]);
+          setTotal(0);
+        }
+      } catch (err) {
+        console.error('Error fetching expenses:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchExpenses();
+  }, []);
+
+  return (
+    <div>
+      <h1>Overview</h1>
+      {loading ? (
+        <p>Loading...</p>
+      ) : chartData.length === 0 ? (
+        <p>No expense data available.</p>
+      ) : (
+        <>
+          <ResponsiveContainer width="100%" height={400}>
+            <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }} barCategoryGap="40%">
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="name" interval={0} tick={{ fontSize: 12 }} angle={-20} textAnchor="end"/>
+              <YAxis />
+              <Tooltip />
+              <Bar dataKey="amount" fill="#0088FE">
+                {chartData.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                ))}
+                <LabelList dataKey="amount" position="top" />
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
+          <p className="total-expenses">
+            Total Expenses: <span className="amount">{total}</span>
+          </p>
+        </>
+      )}
+
+      <div id="version-label" className="mt-6 text-sm text-gray-500">
+        Version: {Version}
+      </div>
+    </div>
+  );
+};
+
+export default Stats;

@@ -213,5 +213,16 @@ li a:hover {
   padding: 0;
 }
 
+.total-expenses {
+  text-align: center; /* centers text inside the element */
+  font-size: 20px;
+  font-weight: 600;
+  color: #1f2937; /* dark gray */
+  margin-top: 16px;
+}
 
+.total-expenses .amount {
+  color: #2563eb; /* blue */
+  font-weight: 700;
+}
 
