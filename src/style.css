@@ -226,3 +226,19 @@ li a:hover {
   font-weight: 700;
 }
 
+/* Tool-tip style*/
+.custom-tooltip {
+  background: rgb(140, 201, 198);
+  border: 1px solid #000000ff;
+  padding: 8px;
+  border-radius: 6px;
+  min-width: 150px;
+  white-space: normal;
+}
+
+.custom-tooltip p {
+  margin: 2px 0;
+}
+
+
+

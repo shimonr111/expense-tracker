@@ -39,9 +39,13 @@ const Stats = () => {
           }
 
           // Convert to recharts format
-          const formattedData = Object.entries(categoryTotals).map(([name, amount]) => ({
-            name,
-            amount: parseFloat(amount.toFixed(2))
+          const formattedData = Object.entries(categoryTotals).map(([category, amount]) => ({
+            name: category,
+            amount: parseFloat(amount.toFixed(2)),
+            subcategories: Object.entries(data[category]).map(([sub, obj]) => ({
+              name: sub,
+              amount: parseFloat(obj?.amount ?? 0)
+            }))
           }));
 
           setChartData(formattedData);
@@ -60,6 +64,28 @@ const Stats = () => {
     fetchExpenses();
   }, []);
 
+  const CustomTooltip = ({ active, payload }) => {
+  if (active && payload && payload.length) {
+    const { name, subcategories } = payload[0].payload;
+    return (
+      <div className="custom-tooltip">
+        <p><u><strong>{name}</strong></u></p>
+        {subcategories && subcategories.length > 0 ? (
+          subcategories.map((sub, idx) => (
+            <p key={idx}>
+              {sub.name}: {sub.amount}
+            </p>
+          ))
+        ) : (
+          <p>No subcategories</p>
+        )}
+      </div>
+    );
+  }
+  return null;
+};
+
+
   return (
     <div>
       <h1>Overview</h1>
@@ -74,7 +100,7 @@ const Stats = () => {
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="name" interval={0} tick={{ fontSize: 12 }} angle={-20} textAnchor="end"/>
               <YAxis />
-              <Tooltip />
+              <Tooltip content={<CustomTooltip />} />
               <Bar dataKey="amount" fill="#0088FE">
                 {chartData.map((entry, index) => (
                   <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />

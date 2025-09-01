@@ -14,13 +14,11 @@ import NoPage from './pages/NoPage';
 import './style.css';
 import { FaHome, FaChartPie, FaEdit, FaPlus } from 'react-icons/fa';
 
-// App Routes component - managing the routing
-const AppRoutes = () => {
-  const [user, setUser] = useState(null); // holds the currently logged-in user
-  const [isAuthorized, setIsAuthorized] = useState(false); // whether the user is allowed (based on DB)
-  const [loading, setLoading] = useState(true); // whether auth check is still in progress
-  const location = useLocation(); // Gets the current route path (e.g "/")
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+const AppRoutes = React.memo(({ setSidebarOpen }) => {
+  const [user, setUser] = useState(null);
+  const [isAuthorized, setIsAuthorized] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const location = useLocation();
 
   // Side effect - it listens for changes in the Firebase authentication state (login/logout), so it will get triggered then
   // This side effect also triggered once, right after AppRoutes component is mounted
@@ -46,11 +44,6 @@ const AppRoutes = () => {
     return () => unsubscribe(); // Unsubscribes from onAuthStateChanged, and prevent memory leaks or duplicate listeners
   }, []);
 
-  // Triggered when the user is logged out
-  const handleLogout = () => {
-    signOut(auth);
-  };
-
   // If loading is true then set div "Verifying authentication, please wait..."
   // Its called when you try to acces one of the protected routes (Home/Edit/About)
   const ProtectedRoute = ({ element }) => {
@@ -71,10 +64,14 @@ const AppRoutes = () => {
     <>
       <nav>
         <ul>
-          {user && isAuthorized && ( // If logged in and authorized, show the sidebar nav
+          {user && isAuthorized && (
             <>
-              <li><NavLink to="#" onClick={(e) => {e.preventDefault(); setSidebarOpen(true);}}>☰</NavLink></li>
               <li>
+                <NavLink to="#" onClick={(e) => { e.preventDefault(); setSidebarOpen(true); }}>
+                  ☰
+                </NavLink>
+              </li>
+               <li>
                 <NavLink to="/home" className={({ isActive }) => isActive ? 'active-link' : undefined}>
                   <FaHome style={{ marginRight: '2px' }} /> Home
                 </NavLink>
@@ -99,12 +96,6 @@ const AppRoutes = () => {
         </ul>
       </nav>
 
-      <Sidebar 
-        isOpen={sidebarOpen} 
-        onClose={() => setSidebarOpen(false)} 
-        onLogout={handleLogout}
-      />
-
       <Routes>
         <Route path="/" element={<Login />} />
         <Route path="/home" element={<ProtectedRoute element={<Home />} />} />
@@ -117,17 +108,21 @@ const AppRoutes = () => {
       </Routes>
     </>
   );
-};
+});
 
 const isDev = process.env.NODE_ENV === 'development';
 const basename = isDev ? '/' : '/expense-tracker';
 
-// Wrap everthing in Router
-const App = () => (
-  <Router basename={basename}>
-    <AppRoutes />
-  </Router>
-);
+const App = () => {
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const handleLogout = () => signOut(auth); // Triggered when the user is logged out
+  return (
+    <Router basename={basename}>
+      <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} onLogout={handleLogout}/>
+      <AppRoutes setSidebarOpen={setSidebarOpen}/>
+    </Router>
+  );
+};
 
-export const Version = "Version 1.0.28";
+export const Version = "Version 1.0.29";
 export default App;
