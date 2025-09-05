@@ -1,14 +1,15 @@
 import { getCurrentDateInfo } from './helpFunctions.js';
 import { db } from './firebase-config.js';
 import { ref, set, get } from "firebase/database";
+import { cleanLogFile } from '../utils/cleanLogFile.js';
 
 // This function responsible to load data from DB in firebase and load it into the combo boxes of category and subcategory
-export function loadCategoriesAndSubcategories(categoryId, subcategoryId, ignoreFixedAmount) {
+export async function loadCategoriesAndSubcategories(categoryId, subcategoryId, ignoreFixedAmount) {
     const categorySelect = document.getElementById(categoryId);
     const subcategorySelect = document.getElementById(subcategoryId);
 
     const expensesRef = ref(db, 'expenses');
-    checkIfResetAllAmounts(expensesRef); // check if there is need to reset the amounts for new month
+    await checkIfResetAllAmounts(expensesRef); // check if there is need to reset the amounts for new month
 
     get(expensesRef).then(snapshot => {
       const data = snapshot.val();
@@ -45,8 +46,6 @@ export function loadCategoriesAndSubcategories(categoryId, subcategoryId, ignore
           subcategorySelect.appendChild(option);
         }
       });
-
-
     })
   .catch(error => {
     console.error("Error fetching expense:", error);
@@ -54,14 +53,17 @@ export function loadCategoriesAndSubcategories(categoryId, subcategoryId, ignore
 }
 
 // This function is responsible if there is need to reset the entire amounts if it's a new month
-function checkIfResetAllAmounts(expensesRef) {
+async function checkIfResetAllAmounts(expensesRef) {
   const [currentYear, currentMonth, currentTime] = getCurrentDateInfo();
-  get(expensesRef).then(snapshot => {
+
+  try {
+    const snapshot = await get(expensesRef); // await here
     const data = snapshot.val();
     if (!data) {
       alert("Expense not found.");
-      return
+      return;
     }
+
     // Check one sample to compare month
     const sampleCategory = Object.values(data)[0];
     const sampleSubcategory = Object.values(sampleCategory)[0];
@@ -74,8 +76,10 @@ function checkIfResetAllAmounts(expensesRef) {
         return; // User cancelled the reset
       }
 
-      const updates = [];
+      await backupExpensesAndLogsToHistory(data);
 
+      // Reset amounts for the new month
+      const updates = [];
       for (const category in data) {
         for (const subcategory in data[category]) {
           const expensePath = `expenses/${category}/${subcategory}`;
@@ -94,12 +98,13 @@ function checkIfResetAllAmounts(expensesRef) {
           updates.push(set(ref(db, expensePath), fixedData)); // Overwrite the data in the DB
         }
       }
-      return Promise.all(updates);
+      // Also reset the log node
+      await cleanLogFile();
     }
-  })
-  .catch(error => {
+  }
+  catch (error) {
     console.error("Error fetching expense:", error);
-  });
+  }
 }
 
 // Check if category is not empty based on the condition, if its Home page or Edit page
@@ -112,5 +117,29 @@ function checkIfCategoryIsNotEmpty(data, category, ignoreFixedAmount) {
     if (ignoreFixedAmount ? !isFixed : isFixed) return true;
   }
   return false;
+}
+
+// Save a copy of current expenses and logs into history/{month_year}
+async function backupExpensesAndLogsToHistory(expensesData) {
+  // Build key
+  const [currentYear, currentMonth] = getCurrentDateInfo();
+  const historyKey = `${currentMonth}_${currentYear}`; // e.g. "9_2025"
+  // References
+  const logsRef = ref(db, "log");
+  const historyRef = ref(db, `history/${historyKey}`);
+  // Fetch logs entry
+  try {
+    // Fetch logs entry
+    const logsSnap = await get(logsRef);
+    const logsData = logsSnap.exists() ? logsSnap.val() : {};
+    // Save both expenses and logs under history
+    await set(historyRef, {
+      expenses: expensesData,
+      log: logsData,
+    });
+    console.log(`Backup saved to history/${historyKey}`);
+  } catch (err) {
+    console.error("Error while backing up:", err);
+  }
 }
 

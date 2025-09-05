@@ -10,9 +10,11 @@ import Login from './pages/Login';
 import Add from './pages/Add';
 import Stats from './pages/Stats';
 import Settings from './pages/Settings';
+import History from './pages/History';
+import Insights from './pages/Insights';
 import NoPage from './pages/NoPage';
 import './style.css';
-import { FaHome, FaChartPie, FaEdit, FaPlus } from 'react-icons/fa';
+import { FaHome, FaChartPie, FaHistory, FaLightbulb } from 'react-icons/fa';
 
 const AppRoutes = React.memo(({ setSidebarOpen }) => {
   const [user, setUser] = useState(null);
@@ -72,23 +74,23 @@ const AppRoutes = React.memo(({ setSidebarOpen }) => {
                 </NavLink>
               </li>
                <li>
-                <NavLink to="/home" className={({ isActive }) => isActive ? 'active-link' : undefined}>
-                  <FaHome style={{ marginRight: '2px' }} /> Home
+                <NavLink to="/home" style={{ fontSize: '12.5px'}} className={({ isActive }) => isActive ? 'active-link' : undefined}>
+                  <FaHome style={{ marginRight: '1px' }} /> Home
                 </NavLink>
               </li>
               <li>
-                <NavLink to="/stats" className={({ isActive }) => isActive ? 'active-link' : undefined}>
-                  <FaChartPie style={{ marginRight: '2px' }} /> Stats
+                <NavLink to="/stats" style={{ fontSize: '12.5px'}} className={({ isActive }) => isActive ? 'active-link' : undefined}>
+                  <FaChartPie style={{ marginRight: '1px' }} /> Stats
                 </NavLink>
               </li>
               <li>
-                <NavLink to="/edit" className={({ isActive }) => isActive ? 'active-link' : undefined}>
-                  <FaEdit style={{ marginRight: '2px' }} /> Edit
+                <NavLink to="/history" style={{ fontSize: '12.5px'}} className={({ isActive }) => isActive ? 'active-link' : undefined}>
+                  <FaHistory style={{ marginRight: '1px' }} /> History
                 </NavLink>
               </li>
               <li>
-                <NavLink to="/add" className={({ isActive }) => isActive ? 'active-link' : undefined}>
-                  <FaPlus style={{ marginRight: '2px' }} /> Add
+                <NavLink to="/insights" style={{ fontSize: '12.5px'}} className={({ isActive }) => isActive ? 'active-link' : undefined}>
+                  <FaLightbulb style={{ marginRight: '1px' }} /> Insights
                 </NavLink>
               </li>
             </>
@@ -104,6 +106,8 @@ const AppRoutes = React.memo(({ setSidebarOpen }) => {
         <Route path="/add" element={<ProtectedRoute element={<Add />} />} />
         <Route path="/about" element={<ProtectedRoute element={<About />} />} />
         <Route path="/settings" element={<ProtectedRoute element={<Settings />} />} />
+        <Route path="/history" element={<ProtectedRoute element={<History />} />} />
+        <Route path="/insights" element={<ProtectedRoute element={<Insights />} />} />
         <Route path="*" element={<NoPage />} />
       </Routes>
     </>
@@ -124,5 +128,5 @@ const App = () => {
   );
 };
 
-export const Version = "Version 1.0.29";
+export const Version = "Version 1.0.30";
 export default App;

@@ -55,7 +55,6 @@ const Home = () => {
         <button id="saveExpenseBtn" type="submit">Save Expense</button>
         <button id="exportMonthToExcelBtn" type="button" onClick={exportMonthToExcel}>Export month to Excel file</button>
         <button id="exportLogBtn" type="button" onClick={exportLogFile}>Export logs to Excel file</button>
-        <button id="cleanLogBtn" type="button" onClick={cleanLogFile}>Clean logs data</button>
       </form>
       <div className="message" id="message"></div>
       <div id="version-label">{Version}</div>

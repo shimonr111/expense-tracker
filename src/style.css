@@ -43,10 +43,6 @@ button {
   background-color: rgb(108, 21, 190); /* Excel green */
   color: white;
 }
-#cleanLogBtn {
-  background-color: rgb(190, 83, 21); /* Excel green */
-  color: white;
-}
 #version-label {
       position: fixed;
       bottom: 0;
