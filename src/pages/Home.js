@@ -3,7 +3,6 @@ import { loadCategoriesAndSubcategories } from '../utils/loadCategories.js';
 import { submitExpense } from '../utils/saveExpenseLogic.js';
 import { exportMonthToExcel } from '../utils/exportMonthToExcel.js';
 import { exportLogFile } from '../utils/exportLogFile.js';
-import { cleanLogFile } from '../utils/cleanLogFile.js';
 import { Version } from '../App.js';
 
 // Home Page Component 
@@ -53,8 +52,8 @@ const Home = () => {
           <input type="text" id="comment" />
         </label>
         <button id="saveExpenseBtn" type="submit">Save Expense</button>
-        <button id="exportMonthToExcelBtn" type="button" onClick={exportMonthToExcel}>Export month to Excel file</button>
-        <button id="exportLogBtn" type="button" onClick={exportLogFile}>Export logs to Excel file</button>
+        <button id="exportMonthToExcelBtn" type="button" onClick={() => exportMonthToExcel(null)}>Export month to Excel file</button>
+        <button id="exportLogBtn" type="button" onClick={() => exportLogFile(null)}>Export logs to Excel file</button>
       </form>
       <div className="message" id="message"></div>
       <div id="version-label">{Version}</div>

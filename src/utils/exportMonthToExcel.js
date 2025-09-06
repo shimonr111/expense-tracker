@@ -4,9 +4,16 @@ import { ref, get } from 'firebase/database';
 import * as XLSX from 'xlsx';
 
 // This function responsible to produce excel file report about the expenses, after 'Export month to Excel file' button clicked
-export function exportMonthToExcel() {
-  const expensesRef = ref(db, "expenses");
-   get(expensesRef).then(snapshot => {
+export function exportMonthToExcel(selectedMonth) {
+  let expensesRef;
+  if (!selectedMonth) {
+    expensesRef = ref(db, "expenses");
+  }
+  else{
+    expensesRef = ref(db, `history/${selectedMonth}/expenses`);
+  }
+
+  get(expensesRef).then(snapshot => {
     const data = snapshot.val();
     if (!data) {
       alert("No data to export.");
@@ -60,7 +67,15 @@ export function exportMonthToExcel() {
     };
 
     // Generate the file
-    let [year, month, time] = getCurrentDateInfo();
+    let year, month;
+    if (!selectedMonth) {
+      [year, month] = getCurrentDateInfo();
+    }
+    else{
+      const [m, y] = selectedMonth.split("_"); 
+      month = m;
+      year = y;
+    }
     month = getMonthName(month);
     const fileName = `Expenses_Report_${month}_${year}.xlsx`;
     XLSX.writeFile(workbook, fileName);

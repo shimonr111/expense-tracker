@@ -4,11 +4,15 @@ import { ref, get } from 'firebase/database';
 import * as XLSX from 'xlsx';
 
 // Exports logs (from /log in Firebase) into an Excel file with proper formatting
-
-export async function exportLogFile() {
+export async function exportLogFile(selectedMonth) {
   try {
-    // Reference to the logs
-    const logRef = ref(db, 'log');
+    let logRef;
+    if (!selectedMonth) {
+      logRef = ref(db, "log");
+    }
+    else{
+      logRef = ref(db, `history/${selectedMonth}/log`);
+    }
     const snapshot = await get(logRef);
 
     if (!snapshot.exists()) {
@@ -50,7 +54,15 @@ export async function exportLogFile() {
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Logs');
 
     // Generate the file
-    let [year, month, time] = getCurrentDateInfo();
+    let year, month;
+    if (!selectedMonth) {
+      [year, month] = getCurrentDateInfo();
+    }
+    else{
+      const [m, y] = selectedMonth.split("_"); 
+      month = m;
+      year = y;
+    }
     month = getMonthName(month);
     const fileName = `Log_file_${month}_${year}.xlsx`;
     XLSX.writeFile(workbook, fileName);
