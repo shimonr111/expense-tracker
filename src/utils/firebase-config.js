@@ -1,6 +1,7 @@
 import { initializeApp } from 'firebase/app';
 import { getDatabase } from 'firebase/database';
 import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "firebase/auth";
+import { ref, get } from 'firebase/database';
   
   // Firebase project configuration details
   const firebaseConfig = {
@@ -21,6 +22,17 @@ const db = getDatabase(app);
 const auth = getAuth(app);
 const provider = new GoogleAuthProvider();
 
-export { app, db, auth, provider, signInWithPopup, signOut, onAuthStateChanged };
+// Function to get HuggingFace API key from Firebase
+async function getHuggingFaceKey() {
+  const keyRef = ref(db, "openaiKey");
+  const snapshot = await get(keyRef);
+  if (snapshot.exists()) {
+    return snapshot.val();
+  } else {
+    throw new Error("HF API key not found in Firebase");
+  }
+}
+
+export { app, db, auth, provider, signInWithPopup, signOut, onAuthStateChanged, getHuggingFaceKey };
 
 
