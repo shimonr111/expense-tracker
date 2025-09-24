@@ -32,3 +32,18 @@ export function updateMaxColumnWidths(maxLengths, colAValue, colBValue) {
   maxLengths[0] = Math.max(maxLengths[0], colAValue.length);
   maxLengths[1] = Math.max(maxLengths[1], colBValue.length);
 }
+
+export function parseLogTimestamp(ts) {
+  try {
+    // Example format: "07-33-24 at Thursday 24-7-2025"
+    const [timePart] = ts.split(' at ');
+    const dateStr = ts.split(' ').slice(-1)[0]; // Gets "24-7-2025"
+    
+    const [hours, minutes, seconds] = timePart.split('-').map(Number);
+    const [day, month, year] = dateStr.split('-').map(Number);
+
+    return new Date(year, month - 1, day, hours, minutes, seconds);
+  } catch {
+    return new Date(0); // fallback for invalid format
+  }
+}

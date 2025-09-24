@@ -1,4 +1,4 @@
-import { getMonthName, showMessage, getCurrentDateInfo } from './helpFunctions.js';
+import { getMonthName, showMessage, getCurrentDateInfo, parseLogTimestamp } from './helpFunctions.js';
 import { db } from './firebase-config.js';  
 import { ref, get } from 'firebase/database';
 import * as XLSX from 'xlsx';
@@ -69,20 +69,5 @@ export async function exportLogFile(selectedMonth) {
     showMessage('Log file exported successfully!', false);
   } catch (error) {
     showMessage('Error exporting log file: ' + error.message, true);
-  }
-}
-
-function parseLogTimestamp(ts) {
-  try {
-    // Example format: "07-33-24 at Thursday 24-7-2025"
-    const [timePart] = ts.split(' at ');
-    const dateStr = ts.split(' ').slice(-1)[0]; // Gets "24-7-2025"
-    
-    const [hours, minutes, seconds] = timePart.split('-').map(Number);
-    const [day, month, year] = dateStr.split('-').map(Number);
-
-    return new Date(year, month - 1, day, hours, minutes, seconds);
-  } catch {
-    return new Date(0); // fallback for invalid format
   }
 }

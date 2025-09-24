@@ -4,11 +4,13 @@ import { db } from '../utils/firebase-config.js';
 import { ref, get } from "firebase/database";
 import { exportMonthToExcel } from '../utils/exportMonthToExcel.js';
 import { exportLogFile } from '../utils/exportLogFile.js';
+import { parseLogTimestamp } from '../utils/helpFunctions.js';
 
 // History Page Component 
 const History = () => {
   const [months, setMonths] = useState([]);
   const [selectedMonth, setSelectedMonth] = useState("");
+  const [lastExpenses, setLastExpenses] = useState([]); 
 
   // Load the combo box with the entries of history from firebase
   useEffect(() => {
@@ -34,6 +36,39 @@ const History = () => {
     fetchHistoryMonths();
   }, []);
 
+  // Fetch last 5 expenses using same logic as exportLogFile
+  useEffect(() => {
+    const fetchLastExpenses = async () => {
+      try {
+        let monthRef = ref(db, "log");
+        const snapshot = await get(monthRef);
+        if (!snapshot.exists()) {
+          setLastExpenses([]);
+          return;
+        }
+        const logs = snapshot.val();
+        // Convert and sort logs (same as exportLogFile)
+        const rows = Object.entries(logs)
+          .map(([key, data]) => ({
+            Timestamp: key,
+            Amount: data.amount,
+            Category: data.category,
+            Subcategory: data.subcategory,
+            User: data.user,
+            Comment: data.comment,
+            _sortDate: parseLogTimestamp(key)
+          }))
+          .sort((a, b) => b._sortDate - a._sortDate) // descending for last expenses
+          .map(({ _sortDate, ...rest }) => rest); 
+
+        setLastExpenses(rows.slice(0, 5)); // take last 5
+      } catch (err) {
+        console.error("Error fetching last expenses:", err);
+      }
+    };
+    fetchLastExpenses();
+  }, []);
+
 
   return (
     <div>
@@ -53,6 +88,31 @@ const History = () => {
           <button id="exportMonthToExcelBtn" type="button" onClick={() => exportMonthToExcel(selectedMonth)}>Export month to Excel file</button>
           <button id="exportLogBtn" type="button" onClick={() => exportLogFile(selectedMonth)}>Export logs to Excel file</button>
         </div>
+        {/* Last 5 expenses table */}
+        {lastExpenses.length > 0 && (
+          <table style={{ marginTop: "20px", borderCollapse: "collapse", width: "100%" }}>
+            <thead>
+              <tr>
+                <th style={{ border: "1px solid #ccc", padding: "5px" }}>Timestamp</th>
+                <th style={{ border: "1px solid #ccc", padding: "5px" }}>Category</th>
+                <th style={{ border: "1px solid #ccc", padding: "5px" }}>Subcategory</th>
+                <th style={{ border: "1px solid #ccc", padding: "5px" }}>Amount</th>
+                <th style={{ border: "1px solid #ccc", padding: "5px" }}>Comment</th>
+              </tr>
+            </thead>
+            <tbody>
+              {lastExpenses.map((exp, idx) => (
+                <tr key={idx}>
+                  <td style={{ border: "1px solid #ccc", padding: "5px" }}>{exp.Timestamp}</td>
+                  <td style={{ border: "1px solid #ccc", padding: "5px" }}>{exp.Category || "-"}</td>
+                  <td style={{ border: "1px solid #ccc", padding: "5px" }}>{exp.Subcategory || "-"}</td>
+                  <td style={{ border: "1px solid #ccc", padding: "5px" }}>{exp.Amount || "-"}</td>
+                  <td style={{ border: "1px solid #ccc", padding: "5px" }}>{exp.Comment || "-"}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
       </div>
       <div className="message" id="message"></div>
       <div id="version-label">{Version}</div>
