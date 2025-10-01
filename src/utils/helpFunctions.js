@@ -1,3 +1,5 @@
+import React from 'react';
+
 // This function is responsible to display the feedback message after the user click on 'Save Expense' button
 export function showMessage(msg, isError) {
   const positiveColors = ["green", "blue", "darkorange", "teal", "purple", "dodgerblue", "mediumseagreen"];
@@ -47,3 +49,44 @@ export function parseLogTimestamp(ts) {
     return new Date(0); // fallback for invalid format
   }
 }
+
+// This function help to format the timestamp to a more readable format
+export function formatTimestamp(input) {
+  // Example input: "09-14-48 at Wednesday 1-10-2025"
+  // Split into [timePart, dayPart]
+  const [timePart, rest] = input.split(" at ");
+  if (!timePart || !rest) return input; // fallback if not in expected format
+  // rest looks like "Wednesday 1-10-2025"
+  const [weekday, datePart] = rest.split(" ");
+  if (!weekday || !datePart) return input;
+  // Parse date
+  const [day, month, year] = datePart.split("-");
+  // Format into nicer short style (DD/MM/YY)
+  const formattedDate = `${day}/${month}/${year.slice(-2)}`;
+  // Ensure time is HH:MM:SS
+  const formattedTime = timePart.replace(/-/g, ":");
+  return `${formattedDate}\n${weekday}\nat ${formattedTime}`;
+}
+
+export function renderLoading(text) {
+  return (
+    <div style={{
+      display: "flex",
+      flexDirection: "column",
+      justifyContent: "center",
+      alignItems: "center",
+      height: "100vh"
+    }}>
+      <div style={{
+        border: "6px solid #f3f3f3",
+        borderTop: "6px solid #3498db",
+        borderRadius: "50%",
+        width: "50px",
+        height: "50px",
+        animation: "spin 1s linear infinite"
+      }} />
+      <p style={{ marginTop: "12px", fontSize: "14px", color: "#444" }}>{text}</p>
+    </div>
+  );
+}
+

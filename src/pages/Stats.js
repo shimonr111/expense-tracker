@@ -3,6 +3,7 @@ import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer, Cart
 import { db } from '../utils/firebase-config.js';
 import { ref, get } from 'firebase/database';
 import { Version } from '../App.js';
+import { renderLoading } from '../utils/helpFunctions.js';
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#AA46BE', '#FF5F7E'];
 
@@ -90,7 +91,7 @@ const Stats = () => {
     <div>
       <h1>Overview</h1>
       {loading ? (
-        <p>Loading...</p>
+        renderLoading("Loading...")
       ) : chartData.length === 0 ? (
         <p>No expense data available.</p>
       ) : (

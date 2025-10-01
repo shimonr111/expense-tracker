@@ -14,7 +14,8 @@ import History from './pages/History';
 import Insights from './pages/Insights';
 import NoPage from './pages/NoPage';
 import './style.css';
-import { FaHome, FaChartPie, FaHistory, FaLightbulb } from 'react-icons/fa';
+import { renderLoading } from './utils/helpFunctions';
+import { FaHome, FaChartPie, FaHistory, FaLightbulb, FaSpinner } from 'react-icons/fa';
 
 const AppRoutes = React.memo(({ setSidebarOpen }) => {
   const [user, setUser] = useState(null);
@@ -49,13 +50,13 @@ const AppRoutes = React.memo(({ setSidebarOpen }) => {
   // If loading is true then set div "Verifying authentication, please wait..."
   // Its called when you try to acces one of the protected routes (Home/Edit/About)
   const ProtectedRoute = ({ element }) => {
-    if (loading) return <div className="loading-message">Verifying authentication, please wait...</div>;
+    if (loading) return renderLoading("Verifying authentication, please wait...");
     if (!user || !isAuthorized) return <Navigate to="/" replace />; // if not logged in or not authorized -> redirects to Login page
     return element;
   };
 
   // Prevent any rendering until Firebase check is done (avoids flashing Login screen at the initial before routing)
-  if (loading) return <div className="loading-message">Verifying authentication, please wait...</div>;
+  if (loading) return renderLoading("Verifying authentication, please wait...");
 
   // If already logged in and on the login page ("/"), redirect to the Home page
   if (user && isAuthorized && location.pathname === "/") {
@@ -128,5 +129,5 @@ const App = () => {
   );
 };
 
-export const Version = "Version 1.0.33";
+export const Version = "Version 1.0.34";
 export default App;

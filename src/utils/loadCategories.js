@@ -70,14 +70,7 @@ async function checkIfResetAllAmounts(expensesRef) {
     const monthInDatabase = sampleSubcategory.month;
     // If month does not match → reset all amounts
     if (currentMonth !== monthInDatabase) {
-
-      const userConfirmed = confirm("It looks like it's a new month. Do you want to reset all non-fixed expenses?");
-      if (!userConfirmed) {
-        return; // User cancelled the reset
-      }
-
       await backupExpensesAndLogsToHistory(data);
-
       // Reset amounts for the new month
       const updates = [];
       for (const category in data) {
@@ -123,7 +116,8 @@ function checkIfCategoryIsNotEmpty(data, category, ignoreFixedAmount) {
 async function backupExpensesAndLogsToHistory(expensesData) {
   // Build key
   const [currentYear, currentMonth] = getCurrentDateInfo();
-  const historyKey = `${currentMonth}_${currentYear}`; // e.g. "9_2025"
+  const fixedCurrentMonth = currentMonth - 1; // because its back up the last month, now its first day of the new month
+  const historyKey = `${fixedCurrentMonth}_${currentYear}`; // e.g. "9_2025"
   // References
   const logsRef = ref(db, "log");
   const historyRef = ref(db, `history/${historyKey}`);

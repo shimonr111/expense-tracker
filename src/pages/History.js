@@ -4,7 +4,7 @@ import { db } from '../utils/firebase-config.js';
 import { ref, get } from "firebase/database";
 import { exportMonthToExcel } from '../utils/exportMonthToExcel.js';
 import { exportLogFile } from '../utils/exportLogFile.js';
-import { parseLogTimestamp } from '../utils/helpFunctions.js';
+import { parseLogTimestamp, formatTimestamp } from '../utils/helpFunctions.js';
 
 // History Page Component 
 const History = () => {
@@ -50,7 +50,7 @@ const History = () => {
         // Convert and sort logs (same as exportLogFile)
         const rows = Object.entries(logs)
           .map(([key, data]) => ({
-            Timestamp: key,
+            Timestamp: formatTimestamp(key),
             Amount: data.amount,
             Category: data.category,
             Subcategory: data.subcategory,
@@ -90,9 +90,9 @@ const History = () => {
         </div>
         {/* Last 5 expenses table */}
         {lastExpenses.length > 0 && (
-          <table style={{ marginTop: "20px", borderCollapse: "collapse", width: "100%" }}>
+          <table style={{ marginTop: "20px", borderCollapse: "collapse", width: "100%", fontSize: "12px" }}>
             <thead>
-              <tr>
+              <tr style={{ backgroundColor: "#a09898ff" }}>
                 <th style={{ border: "1px solid #ccc", padding: "5px" }}>Timestamp</th>
                 <th style={{ border: "1px solid #ccc", padding: "5px" }}>Category</th>
                 <th style={{ border: "1px solid #ccc", padding: "5px" }}>Subcategory</th>
@@ -102,7 +102,7 @@ const History = () => {
             </thead>
             <tbody>
               {lastExpenses.map((exp, idx) => (
-                <tr key={idx}>
+                <tr key={idx} style={{ backgroundColor: idx % 2 === 0 ? "#9bcbd3ff" : "#c4a6c4ff" }}>
                   <td style={{ border: "1px solid #ccc", padding: "5px" }}>{exp.Timestamp}</td>
                   <td style={{ border: "1px solid #ccc", padding: "5px" }}>{exp.Category || "-"}</td>
                   <td style={{ border: "1px solid #ccc", padding: "5px" }}>{exp.Subcategory || "-"}</td>
