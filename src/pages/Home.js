@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { loadCategoriesAndSubcategories } from '../utils/loadCategories.js';
 import { submitExpense } from '../utils/saveExpenseLogic.js';
 import { exportMonthToExcel } from '../utils/exportMonthToExcel.js';
@@ -7,6 +7,7 @@ import { Version } from '../App.js';
 
 // Home Page Component 
 const Home = () => {
+  const [loading, setLoading] = useState(false);
 
   // Runs once to load category and subcategory combo boxes
   useEffect(() => {
@@ -16,6 +17,7 @@ const Home = () => {
   // Declare a handler when the form is submitted (by submitting new expense)
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     // Collect the form input values (amount, category and subcategory)
     const formData = {
       amount: e.target.amount.value,
@@ -29,6 +31,7 @@ const Home = () => {
       e.target.subcategory.innerHTML = ""; // clear subcategory options if needed
       e.target.reset();
     }
+    setLoading(false);
   };
 
   return (
@@ -54,6 +57,11 @@ const Home = () => {
         <button id="saveExpenseBtn" type="submit">Save Expense</button>
         <button id="exportMonthToExcelBtn" type="button" onClick={() => exportMonthToExcel(null)}>Export month to Excel file</button>
         <button id="exportLogBtn" type="button" onClick={() => exportLogFile(null)}>Export logs to Excel file</button>
+        {loading && (
+          <div className="loading-message" style={{ marginTop: '10px', color: 'gray' }}>
+            Saving your expense...
+          </div>
+        )}
       </form>
       <div className="message" id="message"></div>
       <div id="version-label">{Version}</div>

@@ -83,39 +83,33 @@ const Stats = () => {
       </div>
     );
   }
-  return null;
-};
+    return null;
+  };
+
+  if (loading) return renderLoading("Loading...");
+  if (chartData.length === 0) return <p>No expense data available.</p>;
 
 
   return (
     <div>
       <h1>Overview</h1>
-      {loading ? (
-        renderLoading("Loading...")
-      ) : chartData.length === 0 ? (
-        <p>No expense data available.</p>
-      ) : (
-        <>
-          <ResponsiveContainer width="100%" height={400}>
-            <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }} barCategoryGap="40%">
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="name" interval={0} tick={{ fontSize: 12 }} angle={-20} textAnchor="end"/>
-              <YAxis />
-              <Tooltip content={<CustomTooltip />} />
-              <Bar dataKey="amount" fill="#0088FE">
-                {chartData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                ))}
-                <LabelList dataKey="amount" position="top" />
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
-          <p className="total-expenses">
-            Total Expenses: <span className="amount">{total}</span>
-          </p>
-        </>
-      )}
-
+      <ResponsiveContainer width="100%" height={400}>
+        <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }} barCategoryGap="40%">
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis dataKey="name" interval={0} tick={{ fontSize: 12 }} angle={-20} textAnchor="end"/>
+          <YAxis />
+          <Tooltip content={<CustomTooltip />} />
+          <Bar dataKey="amount" fill="#0088FE">
+            {chartData.map((entry, index) => (
+              <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+            ))}
+            <LabelList dataKey="amount" position="top" />
+          </Bar>
+        </BarChart>
+      </ResponsiveContainer>
+      <p className="total-expenses">
+        Total Expenses: <span className="amount">{total}</span>
+      </p>
       <div id="version-label" className="mt-6 text-sm text-gray-500">
         Version: {Version}
       </div>

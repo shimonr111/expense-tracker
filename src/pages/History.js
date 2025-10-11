@@ -11,6 +11,7 @@ const History = () => {
   const [months, setMonths] = useState([]);
   const [selectedMonth, setSelectedMonth] = useState("");
   const [lastExpenses, setLastExpenses] = useState([]); 
+  const [loading, setLoading] = useState(true); 
 
   // Load the combo box with the entries of history from firebase
   useEffect(() => {
@@ -38,12 +39,23 @@ const History = () => {
 
   // Fetch last 5 expenses using same logic as exportLogFile
   useEffect(() => {
+
+    const cached = sessionStorage.getItem("lastExpenses");
+    if (cached) {
+      setLastExpenses(JSON.parse(cached));
+      setLoading(false); // show immediately
+    }
+
     const fetchLastExpenses = async () => {
       try {
+        //setLoading(true); // show loading
+        if (!cached) setLoading(true);
         let monthRef = ref(db, "log");
         const snapshot = await get(monthRef);
         if (!snapshot.exists()) {
           setLastExpenses([]);
+          sessionStorage.setItem("lastExpenses", JSON.stringify([]));
+          //setLoading(false);
           return;
         }
         const logs = snapshot.val();
@@ -61,9 +73,13 @@ const History = () => {
           .sort((a, b) => b._sortDate - a._sortDate) // descending for last expenses
           .map(({ _sortDate, ...rest }) => rest); 
 
-        setLastExpenses(rows.slice(0, 5)); // take last 5
+        const last5 = rows.slice(0, 5);
+        setLastExpenses(last5);
+        sessionStorage.setItem("lastExpenses", JSON.stringify(last5));
       } catch (err) {
         console.error("Error fetching last expenses:", err);
+      } finally {
+        setLoading(false); // hide loading
       }
     };
     fetchLastExpenses();
@@ -88,30 +104,38 @@ const History = () => {
           <button id="exportMonthToExcelBtn" type="button" onClick={() => exportMonthToExcel(selectedMonth)}>Export month to Excel file</button>
           <button id="exportLogBtn" type="button" onClick={() => exportLogFile(selectedMonth)}>Export logs to Excel file</button>
         </div>
-        {/* Last 5 expenses table */}
-        {lastExpenses.length > 0 && (
-          <table style={{ marginTop: "20px", borderCollapse: "collapse", width: "100%", fontSize: "12px" }}>
-            <thead>
-              <tr style={{ backgroundColor: "#a09898ff" }}>
-                <th style={{ border: "1px solid #ccc", padding: "5px" }}>Timestamp</th>
-                <th style={{ border: "1px solid #ccc", padding: "5px" }}>Category</th>
-                <th style={{ border: "1px solid #ccc", padding: "5px" }}>Subcategory</th>
-                <th style={{ border: "1px solid #ccc", padding: "5px" }}>Amount</th>
-                <th style={{ border: "1px solid #ccc", padding: "5px" }}>Comment</th>
-              </tr>
-            </thead>
-            <tbody>
-              {lastExpenses.map((exp, idx) => (
-                <tr key={idx} style={{ backgroundColor: idx % 2 === 0 ? "#9bcbd3ff" : "#c4a6c4ff" }}>
-                  <td style={{ border: "1px solid #ccc", padding: "5px" }}>{exp.Timestamp}</td>
-                  <td style={{ border: "1px solid #ccc", padding: "5px" }}>{exp.Category || "-"}</td>
-                  <td style={{ border: "1px solid #ccc", padding: "5px" }}>{exp.Subcategory || "-"}</td>
-                  <td style={{ border: "1px solid #ccc", padding: "5px" }}>{exp.Amount || "-"}</td>
-                  <td style={{ border: "1px solid #ccc", padding: "5px" }}>{exp.Comment || "-"}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        {loading ? (
+          <div className="loading-message" style={{ marginTop: '40px', color: 'gray' }}>
+            Loading last 5 expenses...
+          </div>
+        ) : (
+          <>
+            {/* Last 5 expenses table */}
+            {lastExpenses.length > 0 && (
+              <table style={{ marginTop: "20px", borderCollapse: "collapse", width: "100%", fontSize: "12px" }}>
+                <thead>
+                  <tr style={{ backgroundColor: "#a09898ff" }}>
+                    <th style={{ border: "1px solid #ccc", padding: "5px" }}>Timestamp</th>
+                    <th style={{ border: "1px solid #ccc", padding: "5px" }}>Category</th>
+                    <th style={{ border: "1px solid #ccc", padding: "5px" }}>Subcategory</th>
+                    <th style={{ border: "1px solid #ccc", padding: "5px" }}>Amount</th>
+                    <th style={{ border: "1px solid #ccc", padding: "5px" }}>Comment</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {lastExpenses.map((exp, idx) => (
+                    <tr key={idx} style={{ backgroundColor: idx % 2 === 0 ? "#9bcbd3ff" : "#c4a6c4ff" }}>
+                      <td style={{ border: "1px solid #ccc", padding: "5px" }}>{exp.Timestamp}</td>
+                      <td style={{ border: "1px solid #ccc", padding: "5px" }}>{exp.Category || "-"}</td>
+                      <td style={{ border: "1px solid #ccc", padding: "5px" }}>{exp.Subcategory || "-"}</td>
+                      <td style={{ border: "1px solid #ccc", padding: "5px" }}>{exp.Amount || "-"}</td>
+                      <td style={{ border: "1px solid #ccc", padding: "5px" }}>{exp.Comment || "-"}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+          </>
         )}
       </div>
       <div className="message" id="message"></div>
