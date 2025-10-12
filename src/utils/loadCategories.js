@@ -5,52 +5,47 @@ import { cleanLogFile } from '../utils/cleanLogFile.js';
 
 // This function responsible to load data from DB in firebase and load it into the combo boxes of category and subcategory
 export async function loadCategoriesAndSubcategories(categoryId, subcategoryId, ignoreFixedAmount) {
-    const categorySelect = document.getElementById(categoryId);
-    const subcategorySelect = document.getElementById(subcategoryId);
+  const categorySelect = document.getElementById(categoryId);
+  const subcategorySelect = document.getElementById(subcategoryId);
 
-    const expensesRef = ref(db, 'expenses');
-    await checkIfResetAllAmounts(expensesRef); // check if there is need to reset the amounts for new month
+  const expensesRef = ref(db, 'expenses');
+  await checkIfResetAllAmounts(expensesRef);
 
-    get(expensesRef).then(snapshot => {
-      const data = snapshot.val();
-      if (!data) {
-        alert("Expense not found.");
-        return
-      }
-      // Load categories into the combobox first
-      categorySelect.innerHTML = '<option value="" disabled selected style="color: gray;">בחר קטגוריה ראשית</option>';
-      for (const category in data) {
-        // Check if add this category because it might be empty from subcategories
-        if (checkIfCategoryIsNotEmpty(data, category, ignoreFixedAmount)){
-          const option = document.createElement('option');
-          option.value = category;
-          option.textContent = category;
-          categorySelect.appendChild(option);
+  try {
+    const snapshot = await get(expensesRef);
+    const data = snapshot.val();
+    if (!data) return { categories: {}, subcategories: {} };
+
+    const categories = {};
+    const subcategories = {};
+
+    for (const category in data) {
+      if (checkIfCategoryIsNotEmpty(data, category, ignoreFixedAmount)) {
+        categories[category] = category;
+        subcategories[category] = {};
+        for (const sub in data[category]) {
+          const subData = data[category][sub];
+          if ((ignoreFixedAmount && subData["fixed amount"]) || (!ignoreFixedAmount && !subData["fixed amount"])) continue;
+          subcategories[category][sub] = subData;
         }
       }
-      // When category changes, load the subcategories into the combo box
-      categorySelect.addEventListener('change', () => {
-        const selectedCategory = categorySelect.value;
-        subcategorySelect.innerHTML = '';
-        subcategorySelect.disabled = false;
-        subcategorySelect.innerHTML = '<option value="" disabled selected style="color: gray;">בחר קטגוריה משנית</option>';
-        const subcategories = data[selectedCategory]; 
-        for (const subcategory in subcategories){
-          const subcategoryData = subcategories[subcategory];
-          if ((ignoreFixedAmount && subcategoryData["fixed amount"]) || (!ignoreFixedAmount && !subcategoryData["fixed amount"])){ // Fixed amount for this subcategory
-            continue;
-          }
-          const option = document.createElement('option');
-          option.value = subcategory;
-          option.textContent = subcategory;
-          subcategorySelect.appendChild(option);
-        }
-      });
-    })
-  .catch(error => {
-    console.error("Error fetching expense:", error);
-  });
+    }
+
+    // Populate DOM
+    populateCategoryDropdown(categorySelect, categories);
+    categorySelect.addEventListener('change', () => {
+      const selectedCategory = categorySelect.value;
+      populateSubcategoryDropdown(subcategorySelect, subcategories[selectedCategory] || {});
+    });
+
+    return { categories, subcategories };
+
+  } catch (error) {
+    console.error("Error fetching expenses:", error);
+    return { categories: {}, subcategories: {} };
+  }
 }
+
 
 // This function is responsible if there is need to reset the entire amounts if it's a new month
 async function checkIfResetAllAmounts(expensesRef) {
@@ -136,4 +131,26 @@ async function backupExpensesAndLogsToHistory(expensesData) {
     console.error("Error while backing up:", err);
   }
 }
+
+export function populateCategoryDropdown(selectElement, categories) {
+  selectElement.innerHTML = '<option value="" disabled selected style="color: gray;">בחר קטגוריה ראשית</option>';
+  Object.keys(categories).forEach(cat => {
+    const option = document.createElement('option');
+    option.value = cat;
+    option.textContent = cat;
+    selectElement.appendChild(option);
+  });
+}
+
+export function populateSubcategoryDropdown(selectElement, subcategories) {
+  selectElement.innerHTML = '<option value="" disabled selected style="color: gray;">בחר קטגוריה משנית</option>';
+  Object.keys(subcategories).forEach(sub => {
+    const option = document.createElement('option');
+    option.value = sub;
+    option.textContent = sub;
+    selectElement.appendChild(option);
+  });
+  selectElement.disabled = false;
+}
+
 

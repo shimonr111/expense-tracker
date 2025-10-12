@@ -9,13 +9,24 @@ const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#AA46BE', '#FF5F7E'
 
 const Stats = () => {
   const [chartData, setChartData] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [total, setTotal] = useState(0);
 
   // Implemented in the background - right after the page is loaded
   useEffect(() => {
+    // Reads a cached value (if exist) from earlier visit in the same session
+    const cachedChartData = sessionStorage.getItem("chartData");
+    const cachedTotal = sessionStorage.getItem("total");
+    if (cachedChartData && cachedTotal) { // If cached, show it immediately without extracting from firebase
+      setChartData(JSON.parse(cachedChartData));
+      setTotal(JSON.parse(cachedTotal));
+      setLoading(false);
+      return;
+    }
+
     const fetchExpenses = async () => {
       try {
+        setLoading(true);
         // Get reference to the expenses in the data base
         const expensesRef = ref(db, 'expenses');
         const snapshot = await get(expensesRef);
@@ -51,6 +62,8 @@ const Stats = () => {
 
           setChartData(formattedData);
           setTotal(grandTotal.toFixed(2));
+          sessionStorage.setItem("chartData", JSON.stringify(formattedData));
+          sessionStorage.setItem("total", JSON.stringify(grandTotal.toFixed(2)));
         } else {
           setChartData([]);
           setTotal(0);
@@ -61,7 +74,6 @@ const Stats = () => {
         setLoading(false);
       }
     };
-
     fetchExpenses();
   }, []);
 

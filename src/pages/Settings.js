@@ -13,14 +13,25 @@ const Settings = () => {
   const [editing, setEditing] = useState(false);
 
   useEffect(() => {
+    // Reads a cached value (if exist) from earlier visit in the same session
+    const cachedUser = sessionStorage.getItem("user");
+    const cachedProfile = sessionStorage.getItem("profile");
+    if (cachedUser && cachedProfile) {
+      setUser(JSON.parse(cachedUser));
+      setProfile(JSON.parse(cachedProfile));
+      return;
+    }
+
     if (auth.currentUser) {
       setUser(auth.currentUser);
+      sessionStorage.setItem("user", JSON.stringify(auth.currentUser));
       const db = getDatabase();
       const userRef = ref(db, `users/${auth.currentUser.uid}`);
 
       get(userRef).then(snapshot => {
         if (snapshot.exists()) {
           setProfile(snapshot.val());
+          sessionStorage.setItem("profile", JSON.stringify(snapshot.val()));
         } else {
           // fallback to auth info if DB entry not found
           setProfile({
@@ -28,6 +39,11 @@ const Settings = () => {
             email: auth.currentUser.email,
             role: 'user'
           });
+          sessionStorage.setItem("profile", JSON.stringify({
+            displayName: auth.currentUser.displayName || '',
+            email: auth.currentUser.email,
+            role: 'user'
+          }));
         }
       });
     }

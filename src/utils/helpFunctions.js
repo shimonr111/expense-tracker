@@ -90,3 +90,28 @@ export function renderLoading(text) {
   );
 }
 
+export function renderSmallLoading(text) {
+  return (
+    <div style={{
+      display: "flex",
+      justifyContent: "center", // horizontal centering
+      alignItems: "center",     // vertical centering
+      height: "100%",           // fill parent container vertically
+      width: "100%",            // fill parent container horizontally
+    }}>
+      <div style={{ display: "inline-flex", alignItems: "center" }}>
+        <div style={{
+          border: "4px solid #f3f3f3",
+          borderTop: "4px solid #3498db",
+          borderRadius: "50%",
+          width: "20px",
+          height: "20px",
+          animation: "spin 1s linear infinite"
+        }} />
+        {text && <span style={{ marginLeft: "6px", fontSize: "12px", color: "#444" }}>{text}</span>}
+      </div>
+    </div>
+  );
+}
+
+

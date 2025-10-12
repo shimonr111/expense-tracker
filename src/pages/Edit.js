@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Version } from '../App.js';
-import { loadCategoriesAndSubcategories } from '../utils/loadCategories.js';
+import { loadCategoriesAndSubcategories, populateCategoryDropdown, populateSubcategoryDropdown } from '../utils/loadCategories.js';
 import { submitExpense } from '../utils/saveExpenseLogic.js';
 import { getDatabase, ref, get } from 'firebase/database';
 
@@ -11,7 +11,31 @@ const Edit = () => {
 
   // Load categories and subcategories combo boxes on mount
   useEffect(() => {
-    loadCategoriesAndSubcategories('category', 'subcategory', false);
+    // Check cache first
+    const cachedCategories = sessionStorage.getItem("categories");
+    const cachedSubcategories = sessionStorage.getItem("subcategories");
+
+    const categorySelect = document.getElementById('category');
+    const subcategorySelect = document.getElementById('subcategory');
+
+    if (cachedCategories && cachedSubcategories) {
+      const categoriesData = JSON.parse(cachedCategories);
+      const subcategoriesData = JSON.parse(cachedSubcategories);
+
+      populateCategoryDropdown(categorySelect, categoriesData);
+      categorySelect.addEventListener('change', () => {
+        const selected = categorySelect.value;
+        populateSubcategoryDropdown(subcategorySelect, subcategoriesData[selected] || {});
+      });
+    } else {
+      // No cache, so load from Firebase
+      loadCategoriesAndSubcategories('category', 'subcategory', true)
+      .then(({ categories, subcategories }) => {
+        // Cache results
+        sessionStorage.setItem("categories", JSON.stringify(categories));
+        sessionStorage.setItem("subcategories", JSON.stringify(subcategories));
+      });
+    }
   }, []);
 
   // Fetch current amount from Firebase when both category and subcategory are selected
@@ -56,6 +80,9 @@ const Edit = () => {
       if (subcategorySelect) {
         subcategorySelect.innerHTML = ''; // Clear subcategories if needed
       }
+      // Remove seesion storage when expense is updated , so it will fetch again from firebase and not use cached data
+      sessionStorage.removeItem("categories");
+      sessionStorage.removeItem("subcategories");
     }
   };
 

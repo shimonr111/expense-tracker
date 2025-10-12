@@ -49,7 +49,14 @@ export async function submitExpense(formData, isFixedAmount, comment = null) {
   await set(logRef, logData);
 
   showMessage(`Expense for ${subcategory} of ${amount.toFixed(2)} ILS saved successfully!`, false);
-    return true;  // success
+  // Remove seesion storage when expense is updated , so it will fetch again from firebase and not use cached data
+  sessionStorage.removeItem("months");
+  sessionStorage.removeItem("selectedMonth");
+  sessionStorage.removeItem("lastExpenses");
+  sessionStorage.removeItem("chartData");
+  sessionStorage.removeItem("total");
+  sessionStorage.removeItem("apiKey");
+  return true;  // success
   } catch (error) {
     showMessage("Error saving expense: " + error.message, true);
     return false; // failure

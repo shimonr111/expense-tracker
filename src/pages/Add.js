@@ -14,11 +14,21 @@ const Add = () => {
 
   // Load existing categories on mount
   useEffect(() => {
+    // Reads a cached value (if exist) from earlier visit in the same session
+    const cachedCategories = sessionStorage.getItem("categories");
+    if (cachedCategories) {
+      const parsed = JSON.parse(cachedCategories);
+      setCategories(Array.isArray(parsed) ? parsed : Object.keys(parsed));
+      return;
+    }
+
+
     const fetchCategories = async () => {
       const snapshot = await get(ref(db, 'expenses'));
       const data = snapshot.val();
       if (data) {
         setCategories(Object.keys(data));
+        sessionStorage.setItem("categories", JSON.stringify(Object.keys(data)));
       }
     };
     fetchCategories();
@@ -53,6 +63,10 @@ const Add = () => {
     } catch (error) {
       console.error('Error saving to database:', error);
       showMessage('Failed to add entry.', true);
+    } finally {
+      // Remove seesion storage when expense is updated , so it will fetch again from firebase and not use cached data
+      sessionStorage.removeItem("categories");
+      sessionStorage.removeItem("subcategories");
     }
   };
 

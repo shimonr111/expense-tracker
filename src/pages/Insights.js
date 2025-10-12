@@ -17,10 +17,19 @@ const Insights = () => {
 
   // Side effects on mount
   useEffect(() => {
+    // Reads a cached value (if exist) from earlier visit in the same session
+    const cachedApiKey = sessionStorage.getItem("apiKey");
+    if (cachedApiKey) { // If cached, show it immediately without extracting from firebase
+      setApiKey(JSON.parse(cachedApiKey));
+      setLoading(false);
+      return;
+    }
+
     async function fetchKey() {
       try {
         const key = await getHuggingFaceKey(); // retrieve API key
         setApiKey(key);
+        sessionStorage.setItem("apiKey", JSON.stringify(key));
         const historyRef = ref(db, "history/2_2025/expenses"); // read history data from data base
         const snapshot = await get(historyRef);
         let data;

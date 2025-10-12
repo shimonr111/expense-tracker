@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { loadCategoriesAndSubcategories } from '../utils/loadCategories.js';
+import { loadCategoriesAndSubcategories, populateCategoryDropdown, populateSubcategoryDropdown } from '../utils/loadCategories.js';
 import { submitExpense } from '../utils/saveExpenseLogic.js';
 import { exportMonthToExcel } from '../utils/exportMonthToExcel.js';
 import { exportLogFile } from '../utils/exportLogFile.js';
 import { Version } from '../App.js';
+import { renderSmallLoading } from '../utils/helpFunctions.js';
 
 // Home Page Component 
 const Home = () => {
@@ -11,7 +12,31 @@ const Home = () => {
 
   // Runs once to load category and subcategory combo boxes
   useEffect(() => {
-    loadCategoriesAndSubcategories('category', 'subcategory', true);
+    // Check cache first
+    const cachedCategories = sessionStorage.getItem("categories");
+    const cachedSubcategories = sessionStorage.getItem("subcategories");
+
+    const categorySelect = document.getElementById('category');
+    const subcategorySelect = document.getElementById('subcategory');
+
+    if (cachedCategories && cachedSubcategories) {
+      const categoriesData = JSON.parse(cachedCategories);
+      const subcategoriesData = JSON.parse(cachedSubcategories);
+
+      populateCategoryDropdown(categorySelect, categoriesData);
+      categorySelect.addEventListener('change', () => {
+        const selected = categorySelect.value;
+        populateSubcategoryDropdown(subcategorySelect, subcategoriesData[selected] || {});
+      });
+    } else {
+      // No cache, so load from Firebase
+      loadCategoriesAndSubcategories('category', 'subcategory', true)
+      .then(({ categories, subcategories }) => {
+        // Cache results
+        sessionStorage.setItem("categories", JSON.stringify(categories));
+        sessionStorage.setItem("subcategories", JSON.stringify(subcategories));
+      });
+    }
   }, []);
 
   // Declare a handler when the form is submitted (by submitting new expense)
@@ -57,11 +82,7 @@ const Home = () => {
         <button id="saveExpenseBtn" type="submit">Save Expense</button>
         <button id="exportMonthToExcelBtn" type="button" onClick={() => exportMonthToExcel(null)}>Export month to Excel file</button>
         <button id="exportLogBtn" type="button" onClick={() => exportLogFile(null)}>Export logs to Excel file</button>
-        {loading && (
-          <div className="loading-message" style={{ marginTop: '10px', color: 'gray' }}>
-            Saving your expense...
-          </div>
-        )}
+        {loading && renderSmallLoading("Saving expense, please wait...")}
       </form>
       <div className="message" id="message"></div>
       <div id="version-label">{Version}</div>
