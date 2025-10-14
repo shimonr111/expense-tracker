@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { loadCategoriesAndSubcategories, populateCategoryDropdown, populateSubcategoryDropdown } from '../utils/loadCategories.js';
+import { initializeCategoryDropdowns } from '../utils/loadCategories.js';
 import { submitExpense } from '../utils/saveExpenseLogic.js';
 import { exportMonthToExcel } from '../utils/exportMonthToExcel.js';
 import { exportLogFile } from '../utils/exportLogFile.js';
@@ -12,31 +12,7 @@ const Home = () => {
 
   // Runs once to load category and subcategory combo boxes
   useEffect(() => {
-    // Check cache first
-    const cachedCategories = sessionStorage.getItem("categories");
-    const cachedSubcategories = sessionStorage.getItem("subcategories");
-
-    const categorySelect = document.getElementById('category');
-    const subcategorySelect = document.getElementById('subcategory');
-
-    if (cachedCategories && cachedSubcategories) {
-      const categoriesData = JSON.parse(cachedCategories);
-      const subcategoriesData = JSON.parse(cachedSubcategories);
-
-      populateCategoryDropdown(categorySelect, categoriesData);
-      categorySelect.addEventListener('change', () => {
-        const selected = categorySelect.value;
-        populateSubcategoryDropdown(subcategorySelect, subcategoriesData[selected] || {});
-      });
-    } else {
-      // No cache, so load from Firebase
-      loadCategoriesAndSubcategories('category', 'subcategory', true)
-      .then(({ categories, subcategories }) => {
-        // Cache results
-        sessionStorage.setItem("categories", JSON.stringify(categories));
-        sessionStorage.setItem("subcategories", JSON.stringify(subcategories));
-      });
-    }
+    initializeCategoryDropdowns();
   }, []);
 
   // Declare a handler when the form is submitted (by submitting new expense)

@@ -13,39 +13,59 @@ const Insights = () => {
   const [input, setInput] = useState(""); // text inside the input field
   const [loading, setLoading] = useState(false); // true when AI is generating a response
   const [systemContext, setSystemContext] = useState(null); // a hidden message that holds past history or context, not shown in chat
+  const [historyData, setHistoryData] = useState(null);
   const chatContainerRef = useRef(null);
 
   // Side effects on mount
   useEffect(() => {
-    // Reads a cached value (if exist) from earlier visit in the same session
     const cachedApiKey = sessionStorage.getItem("apiKey");
-    if (cachedApiKey) { // If cached, show it immediately without extracting from firebase
-      setApiKey(JSON.parse(cachedApiKey));
-      setLoading(false);
-      return;
-    }
+    const cachedHistory = sessionStorage.getItem("historyData");
 
-    async function fetchKey() {
+    // Helper function to handle cached data
+    const handleCachedData = async (key, data) => {
+      setApiKey(key);
+      setHistoryData(data);
+      setSystemContext({ role: "system", content: data });
+      setLoading(false);
+      await sendHistoryData(data, key);
+    };
+
+    // Helper function to fetch fresh data
+    const fetchKey = async () => {
       try {
-        const key = await getHuggingFaceKey(); // retrieve API key
+        const key = await getHuggingFaceKey();
         setApiKey(key);
         sessionStorage.setItem("apiKey", JSON.stringify(key));
-        const historyRef = ref(db, "history/2_2025/expenses"); // read history data from data base
+
+        const historyRef = ref(db, "history/2_2025/expenses");
         const snapshot = await get(historyRef);
+
         let data;
         if (snapshot.exists()) {
           data = snapshot.val();
+          sessionStorage.setItem("historyData", JSON.stringify(data));
         } else {
           console.log("No history data available");
         }
-        setSystemContext({ role: "system", content: data }); // Store as hidden system context (won't be shown in chat)
+
+        setSystemContext({ role: "system", content: data });
         await sendHistoryData(data, key);
       } catch (err) {
         setError(err.message);
+      } finally {
+        setLoading(false);
       }
+    };
+
+    if (cachedApiKey && cachedHistory) { // If cached, show it immediately
+      const key = JSON.parse(cachedApiKey);
+      const data = JSON.parse(cachedHistory);
+      handleCachedData(key, data);
+    } else {
+      fetchKey(); // Not cached so fetch from firebase
     }
-    fetchKey();
-  }, []);
+}, []);
+
 
   // Auto-scroll to bottom whenever messages change
   useEffect(() => {

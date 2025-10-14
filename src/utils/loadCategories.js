@@ -3,6 +3,31 @@ import { db } from './firebase-config.js';
 import { ref, set, get } from "firebase/database";
 import { cleanLogFile } from '../utils/cleanLogFile.js';
 
+// This function initialize the combo boxes of category and subcategory
+export async function initializeCategoryDropdowns() {
+  const cachedCategories = sessionStorage.getItem("categories");
+  const cachedSubcategories = sessionStorage.getItem("subcategories");
+
+  const categorySelect = document.getElementById('category');
+  const subcategorySelect = document.getElementById('subcategory');
+
+  if (cachedCategories && cachedSubcategories) { // Use the cached data
+    const categoriesData = JSON.parse(cachedCategories);
+    const subcategoriesData = JSON.parse(cachedSubcategories);
+
+    populateCategoryDropdown(categorySelect, categoriesData);
+    categorySelect.addEventListener('change', () => {
+      const selected = categorySelect.value;
+      populateSubcategoryDropdown(subcategorySelect, subcategoriesData[selected] || {});
+    });
+  } 
+  else { // There is no cached data so fetch from firebase
+    const { categories, subcategories } = await loadCategoriesAndSubcategories('category', 'subcategory', true);
+    sessionStorage.setItem("categories", JSON.stringify(categories));
+    sessionStorage.setItem("subcategories", JSON.stringify(subcategories));
+  }
+}
+
 // This function responsible to load data from DB in firebase and load it into the combo boxes of category and subcategory
 export async function loadCategoriesAndSubcategories(categoryId, subcategoryId, ignoreFixedAmount) {
   const categorySelect = document.getElementById(categoryId);

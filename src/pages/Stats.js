@@ -122,9 +122,7 @@ const Stats = () => {
       <p className="total-expenses">
         Total Expenses: <span className="amount">{total}</span>
       </p>
-      <div id="version-label" className="mt-6 text-sm text-gray-500">
-        Version: {Version}
-      </div>
+      <div id="version-label">{Version}</div>
     </div>
   );
 };

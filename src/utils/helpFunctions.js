@@ -108,7 +108,7 @@ export function renderSmallLoading(text) {
           height: "20px",
           animation: "spin 1s linear infinite"
         }} />
-        {text && <span style={{ marginLeft: "6px", fontSize: "12px", color: "#444" }}>{text}</span>}
+        {text && <span style={{ marginLeft: "6px", fontSize: "16px", color: "#444" }}>{text}</span>}
       </div>
     </div>
   );
