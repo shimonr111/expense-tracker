@@ -11,7 +11,7 @@ const Edit = () => {
 
   // Load categories and subcategories combo boxes on mount
   useEffect(() => {
-      initializeCategoryDropdowns();
+      initializeCategoryDropdowns(false);
   }, []);
 
   // Fetch current amount from Firebase when both category and subcategory are selected
@@ -26,7 +26,6 @@ const Edit = () => {
             const data = snapshot.val();
             setAmountInput(data.amount || '');
           } else {
-            console.warn('No data found for selected category/subcategory');
             setAmountInput('');
           }
         } catch (error) {

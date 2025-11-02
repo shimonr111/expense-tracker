@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { initializeCategoryDropdowns } from '../utils/loadCategories.js';
+import { fetchCategoriesData } from '../utils/loadCategories.js';
 import { submitExpense } from '../utils/saveExpenseLogic.js';
 import { exportMonthToExcel } from '../utils/exportMonthToExcel.js';
 import { exportLogFile } from '../utils/exportLogFile.js';
@@ -10,10 +11,30 @@ import { renderSmallLoading } from '../utils/helpFunctions.js';
 const Home = () => {
   const [loading, setLoading] = useState(false);
 
-  // Runs once to load category and subcategory combo boxes
   useEffect(() => {
-    initializeCategoryDropdowns();
+    const loadData = async () => {
+      const { categoriesData, subcategoriesData } = await fetchCategoriesData(true);
+      setCategories(Object.keys(categoriesData));
+      setSubData(subcategoriesData);
+    };
+    loadData();
   }, []);
+
+  const [categories, setCategories] = useState([]);
+  const [subData, setSubData] = useState({});
+  const [subcategories, setSubcategories] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState("");
+
+  const handleCategoryChange = (e) => {
+    const cat = e.target.value;
+    setSelectedCategory(cat);
+    setSubcategories(Object.keys(subData[cat] || {}));
+  };
+
+  // Runs once to load category and subcategory combo boxes
+  // useEffect(() => {
+  //   initializeCategoryDropdowns(true);
+  // }, []);
 
   // Declare a handler when the form is submitted (by submitting new expense)
   const handleSubmit = async (e) => {
@@ -41,11 +62,17 @@ const Home = () => {
       <form id="expenseForm" onSubmit={handleSubmit}>
         <label>
           Category <span className="required">*</span>
-          <select id="category" required></select>
+          <select id="category" value={selectedCategory} onChange={handleCategoryChange} required>
+            <option value="">Select category</option>
+            {categories.map(cat => <option key={cat} value={cat}>{cat}</option>)}
+          </select>
         </label>
         <label>
           Subcategory <span className="required">*</span>
-          <select id="subcategory" required></select>
+          <select id="subcategory" required>
+            <option value="">Select subcategory</option>
+            {subcategories.map(sub => <option key={sub} value={sub}>{sub}</option>)}
+          </select>
         </label>
         <label>
           Amount <span className="required">*</span>
