@@ -3,61 +3,6 @@ import { db } from './firebase-config.js';
 import { ref, set, get } from "firebase/database";
 import { cleanLogFile } from '../utils/cleanLogFile.js';
 
-///////////////////////////////
-///////////////////////////////
-
-// Returns category and subcategory data instead of touching the DOM
-export async function fetchCategoriesData(ignoreFixedAmount) {
-  const categoriesCacheKey = ignoreFixedAmount ? "categories_home" : "categories_edit";
-  const subcategoriesCacheKey = ignoreFixedAmount ? "subcategories_home" : "subcategories_edit";
-
-  let cachedCategories = sessionStorage.getItem(categoriesCacheKey);
-  let cachedSubcategories = sessionStorage.getItem(subcategoriesCacheKey);
-
-  if (cachedCategories && cachedSubcategories) {
-    const categoriesData = JSON.parse(cachedCategories);
-    const subcategoriesData = JSON.parse(cachedSubcategories);
-    return { categoriesData, subcategoriesData };
-  }
-
-  const { categories, subcategories } = await loadCategoriesAndSubcategoriesData(ignoreFixedAmount);
-  sessionStorage.setItem(categoriesCacheKey, JSON.stringify(categories));
-  sessionStorage.setItem(subcategoriesCacheKey, JSON.stringify(subcategories));
-  return { categoriesData: categories, subcategoriesData: subcategories };
-}
-
-// This is just like your existing loadCategoriesAndSubcategories, but without DOM
-export async function loadCategoriesAndSubcategoriesData(ignoreFixedAmount) {
-  const { getCurrentDateInfo } = await import('./helpFunctions.js');
-  const { db } = await import('./firebase-config.js');
-  const { ref, get } = await import("firebase/database");
-
-  const expensesRef = ref(db, 'expenses');
-  const snapshot = await get(expensesRef);
-  const data = snapshot.val();
-  if (!data) return { categories: {}, subcategories: {} };
-
-  const categories = {};
-  const subcategories = {};
-
-  for (const category in data) {
-    if (checkIfCategoryIsNotEmpty(data, category, ignoreFixedAmount)) {
-      categories[category] = category;
-      subcategories[category] = {};
-      for (const sub in data[category]) {
-        const subData = data[category][sub];
-        if ((ignoreFixedAmount && subData["fixed amount"]) || (!ignoreFixedAmount && !subData["fixed amount"])) continue;
-        subcategories[category][sub] = subData;
-      }
-    }
-  }
-
-  return { categories, subcategories };
-}
-
-///////////////////////////////
-///////////////////////////////
-
 // This function initialize the combo boxes of category and subcategory
 export async function initializeCategoryDropdowns(ignoreFixedAmount) {
   // Use different sessionStorage keys for Home and Edit pages
@@ -78,7 +23,11 @@ export async function initializeCategoryDropdowns(ignoreFixedAmount) {
     populateCategoryDropdown(categorySelect, categoriesData);
     categorySelect.addEventListener('change', () => {
       const selectedCategory = categorySelect.value;
-      populateSubcategoryDropdown(subcategorySelect, subcategoriesData[selectedCategory] || {});
+      //populateSubcategoryDropdown(subcategorySelect, subcategoriesData[selectedCategory] || {});
+      // Delay DOM manipulation slightly
+      setTimeout(() => {
+        populateSubcategoryDropdown(subcategorySelect, subcategoriesData[selectedCategory] || {});
+      }, 100);
     });
   }
 
@@ -122,7 +71,11 @@ export async function loadCategoriesAndSubcategories(categoryId, subcategoryId, 
     populateCategoryDropdown(categorySelect, categories);
     categorySelect.addEventListener('change', () => {
       const selectedCategory = categorySelect.value;
-      populateSubcategoryDropdown(subcategorySelect, subcategories[selectedCategory] || {});
+      //populateSubcategoryDropdown(subcategorySelect, subcategories[selectedCategory] || {});
+      // Delay DOM manipulation slightly
+      setTimeout(() => {
+        populateSubcategoryDropdown(subcategorySelect, subcategories[selectedCategory] || {});
+      }, 100);
     });
 
     return { categories, subcategories };
