@@ -23,7 +23,6 @@ export async function initializeCategoryDropdowns(ignoreFixedAmount) {
     populateCategoryDropdown(categorySelect, categoriesData);
     categorySelect.addEventListener('change', () => {
       const selectedCategory = categorySelect.value;
-      categorySelect.blur();
       populateSubcategoryDropdown(subcategorySelect, subcategoriesData[selectedCategory] || {});
     });
   }
@@ -68,7 +67,6 @@ export async function loadCategoriesAndSubcategories(categoryId, subcategoryId, 
     populateCategoryDropdown(categorySelect, categories);
     categorySelect.addEventListener('change', () => {
       const selectedCategory = categorySelect.value;
-      categorySelect.blur();
       populateSubcategoryDropdown(subcategorySelect, subcategories[selectedCategory] || {});
     });
 
