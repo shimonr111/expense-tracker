@@ -171,6 +171,7 @@
 // export default Home;
 
 import React, { useEffect, useState, useRef } from 'react';
+import { initializeCategoryDropdowns } from '../utils/loadCategories.js';
 import { ref, get } from 'firebase/database';
 import { db } from '../utils/firebase-config.js';
 import { submitExpense } from '../utils/saveExpenseLogic.js';
@@ -179,20 +180,24 @@ import { exportLogFile } from '../utils/exportLogFile.js';
 import { Version } from '../App.js';
 import { renderSmallLoading } from '../utils/helpFunctions.js';
 
+// Home Page Component 
 const Home = () => {
   const [loading, setLoading] = useState(false);
   const [categories, setCategories] = useState([]);
   const [subcategories, setSubcategories] = useState({});
   const [selectedCategory, setSelectedCategory] = useState('');
   const [selectedSubcategory, setSelectedSubcategory] = useState('');
-
-  const subSelectRef = useRef(null);
+  
+  // Use refs to prevent Safari focus issues
+  const subcategorySelectRef = useRef(null);
+  const preventBlurRef = useRef(false);
 
   useEffect(() => {
     const fetchCategories = async () => {
       try {
         const snapshot = await get(ref(db, 'expenses'));
         const data = snapshot.val() || {};
+
         const categoriesList = [];
         const subcategoriesMap = {};
 
@@ -200,7 +205,7 @@ const Home = () => {
           const subs = {};
           for (const sub in data[category]) {
             const subData = data[category][sub];
-            if (!subData['fixed amount']) {
+            if (!subData['fixed amount']) { // ignore fixed ones for Home page
               subs[sub] = subData;
             }
           }
@@ -220,33 +225,24 @@ const Home = () => {
     fetchCategories();
   }, []);
 
+  // Handle category change with Safari-specific fix
   const handleCategoryChange = (e) => {
-    const newCat = e.target.value;
-    setSelectedCategory(newCat);
+    const newCategory = e.target.value;
+    
+    // Use setTimeout to batch state updates and prevent Safari focus issues
+    preventBlurRef.current = true;
+    
+    setSelectedCategory(newCategory);
     setSelectedSubcategory('');
-
-    // Update subcategories manually (avoids React re-render delay)
-    const subSelect = subSelectRef.current;
-    if (subSelect) {
-      subSelect.innerHTML = ''; // clear old options
-
-      const defaultOption = document.createElement('option');
-      defaultOption.value = '';
-      defaultOption.disabled = true;
-      defaultOption.textContent = 'Select a subcategory';
-      subSelect.appendChild(defaultOption);
-
-      if (subcategories[newCat]) {
-        Object.keys(subcategories[newCat]).forEach((sub) => {
-          const opt = document.createElement('option');
-          opt.value = sub;
-          opt.textContent = sub;
-          subSelect.appendChild(opt);
-        });
+    
+    // Allow a brief moment for state to settle before allowing subcategory interaction
+    setTimeout(() => {
+      preventBlurRef.current = false;
+      // Optionally focus the subcategory select after state settles
+      if (subcategorySelectRef.current && newCategory) {
+        subcategorySelectRef.current.focus();
       }
-
-      subSelect.value = ''; // reset selection
-    }
+    }, 100);
   };
 
   const handleSubmit = async (e) => {
@@ -255,10 +251,11 @@ const Home = () => {
 
     const amount = e.target.amount.value;
     const comment = e.target.comment.value;
-    const category = selectedCategory;
-    const subcategory = e.target.subcategory.value;
-
-    const success = await submitExpense({ amount, category, subcategory }, false, comment);
+    const success = await submitExpense(
+      { amount, category: selectedCategory, subcategory: selectedSubcategory },
+      false,
+      comment
+    );
 
     if (success) {
       setSelectedCategory('');
@@ -268,6 +265,9 @@ const Home = () => {
 
     setLoading(false);
   };
+
+  // Get current subcategory options
+  const currentSubcategories = selectedCategory ? Object.keys(subcategories[selectedCategory] || {}) : [];
 
   return (
     <div>
@@ -290,33 +290,39 @@ const Home = () => {
             ))}
           </select>
         </label>
-
         <label>
           Subcategory <span className="required">*</span>
-          <select ref={subSelectRef} id="subcategory" required>
+          <select
+            ref={subcategorySelectRef}
+            value={selectedSubcategory}
+            onChange={(e) => setSelectedSubcategory(e.target.value)}
+            disabled={!selectedCategory}
+            required
+            key={selectedCategory} // Force re-render when category changes
+          >
             <option value="" disabled>
               Select a subcategory
             </option>
+            {currentSubcategories.map((sub) => (
+              <option key={sub} value={sub}>
+                {sub}
+              </option>
+            ))}
           </select>
         </label>
-
         <label>
           Amount <span className="required">*</span>
           <input type="number" step="0.01" id="amount" required />
         </label>
-
         <label>
           Comment
           <input type="text" id="comment" />
         </label>
-
         <button id="saveExpenseBtn" type="submit">Save Expense</button>
         <button id="exportMonthToExcelBtn" type="button" onClick={() => exportMonthToExcel(null)}>Export month to Excel file</button>
         <button id="exportLogBtn" type="button" onClick={() => exportLogFile(null)}>Export logs to Excel file</button>
-
-        {loading && renderSmallLoading('Saving expense, please wait...')}
+        {loading && renderSmallLoading("Saving expense, please wait...")}
       </form>
-
       <div className="message" id="message"></div>
       <div id="version-label">{Version}</div>
     </div>
@@ -324,4 +330,3 @@ const Home = () => {
 };
 
 export default Home;
-
