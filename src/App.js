@@ -8,6 +8,7 @@ import Edit from './pages/Edit';
 import About from './pages/About';
 import Login from './pages/Login';
 import Add from './pages/Add';
+import Remove from './pages/Remove';
 import Stats from './pages/Stats';
 import Settings from './pages/Settings';
 import History from './pages/History';
@@ -105,6 +106,7 @@ const AppRoutes = React.memo(({ setSidebarOpen }) => {
         <Route path="/stats" element={<ProtectedRoute element={<Stats />} />} />
         <Route path="/edit" element={<ProtectedRoute element={<Edit />} />} />
         <Route path="/add" element={<ProtectedRoute element={<Add />} />} />
+        <Route path="/remove" element={<ProtectedRoute element={<Remove />} />} />
         <Route path="/about" element={<ProtectedRoute element={<About />} />} />
         <Route path="/settings" element={<ProtectedRoute element={<Settings />} />} />
         <Route path="/history" element={<ProtectedRoute element={<History />} />} />
@@ -129,5 +131,5 @@ const App = () => {
   );
 };
 
-export const Version = "Version 1.0.44";
+export const Version = "Version 1.0.45";
 export default App;

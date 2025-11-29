@@ -4,6 +4,7 @@ import { initializeCategoryDropdowns } from '../utils/loadCategories.js';
 import { submitExpense } from '../utils/saveExpenseLogic.js';
 import { getDatabase, ref, get } from 'firebase/database';
 
+// Edit Page component
 const Edit = () => {
   const [selectedCategory, setSelectedCategory] = useState('');
   const [selectedSubcategory, setSelectedSubcategory] = useState('');
@@ -75,7 +76,8 @@ const Edit = () => {
         </label>
         <label>
           Amount
-          <input type="number" step="0.01" id="amount" required value={amountInput} onChange={(e) => setAmountInput(e.target.value)}/>
+          {/*<input type="number" step="0.01" id="amount" required value={amountInput} onChange={(e) => setAmountInput(e.target.value)}/>*/}
+          <input type="text" inputMode="numeric" pattern="-?[0-9]*" id="amount" required value={amountInput} onChange={(e) => setAmountInput(e.target.value)}/>
         </label>
         <button id="saveExpenseBtn" type="submit">
           Update amount
