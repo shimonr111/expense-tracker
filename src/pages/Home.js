@@ -9,6 +9,8 @@ import { renderSmallLoading } from '../utils/helpFunctions.js';
 // Home Page Component 
 const Home = () => {
   const [loading, setLoading] = useState(false);
+  //setSubtractAmount
+  const [subtractAmount, setSubtractAmount] = useState(false);
 
   // Runs once to load category and subcategory combo boxes
   useEffect(() => {
@@ -19,9 +21,15 @@ const Home = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+
+    let amountValue = parseFloat(e.target.amount.value);
+    // Convert to negative if checkbox is checked
+    if (subtractAmount) {
+      amountValue = -Math.abs(amountValue);
+    }
     // Collect the form input values (amount, category and subcategory)
     const formData = {
-      amount: e.target.amount.value,
+      amount: amountValue,
       category: e.target.category.value,
       subcategory: e.target.subcategory.value
     };
@@ -55,6 +63,10 @@ const Home = () => {
         <label>
           Comment
           <input type="text" id="comment" />
+        </label>
+        <label id="checkboxLabel">
+          Subtract the amount
+          <input type="checkbox" checked={subtractAmount} onChange={(e) => setSubtractAmount(e.target.checked)}/>
         </label>
         <button id="saveExpenseBtn" type="submit">Save Expense</button>
         <button id="exportMonthToExcelBtn" type="button" onClick={() => exportMonthToExcel(null)}>Export month to Excel file</button>

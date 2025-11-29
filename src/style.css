@@ -35,6 +35,11 @@ button {
 #amount, #comment {
   font-size: 16px;
 }
+#checkboxLabel {
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+}
 #exportMonthToExcelBtn {
   background-color: #217346; /* Excel green */
   color: white;

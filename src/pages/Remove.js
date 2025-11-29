@@ -59,7 +59,7 @@ const Remove = () => {
     <div>
       <h1>Remove Subcategory</h1>
       <form id="expenseForm" onSubmit={handleSubmit}>
-        <label style={{ display: 'inline-flex', alignItems: 'center', whiteSpace: 'nowrap'}}>
+        <label id="checkboxLabel">
           Non-fixed categories
           <input type="checkbox" checked={fixedCategories} onChange={(e) => setFixedCategories(e.target.checked)}/>
         </label>
