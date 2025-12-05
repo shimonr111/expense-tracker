@@ -34,6 +34,7 @@ export async function sendMessage(input, apiKey, messages, setMessages, setInput
     - Empty line between sections
     - Total expenses on a separate line
     - Tips only if explicitly asked
+    - expenses show totals per category, while the log lists each individual expense with full details; they both refer to the same expenses
     `
   };
 
