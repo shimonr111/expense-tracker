@@ -1,4 +1,5 @@
 import React from 'react';
+import { useState } from "react";
 
 // This function is responsible to display the feedback message after the user click on 'Save Expense' button
 export function showMessage(msg, isError) {
@@ -9,6 +10,20 @@ export function showMessage(msg, isError) {
   messageDiv.textContent = msg;
   messageDiv.style.color = isError ? "red" : randomColor;
 }
+
+// Same as showMessage, but for react
+export function useMessage() {
+  const positiveColors = ["green", "blue", "darkorange", "teal", "purple", "dodgerblue", "mediumseagreen"];
+  const [message, setMessage] = useState("");
+  const [color, setColor] = useState("");
+  function showMessage(msg, isError) {
+    const randomColor = positiveColors[Math.floor(Math.random() * positiveColors.length)];
+    setMessage(msg);
+    setColor(isError ? "red" : randomColor);
+  }
+  return { message, color, showMessage };
+}
+
 
 // This function get month number, and return month name
 export function getMonthName(monthNumber) {

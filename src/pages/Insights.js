@@ -27,6 +27,7 @@ const Insights = () => {
       setHistoryData(data);
       setSystemContext({ role: "system", content: data });
       setLoading(false);
+      console.log("Hello")
       await sendHistoryData(data, key);
     };
 
@@ -37,7 +38,7 @@ const Insights = () => {
         setApiKey(key);
         sessionStorage.setItem("apiKey", JSON.stringify(key));
 
-        const historyRef = ref(db, "history/2_2025/expenses");
+        const historyRef = ref(db, "history");
         const snapshot = await get(historyRef);
 
         let data;
