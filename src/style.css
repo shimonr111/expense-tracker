@@ -28,6 +28,12 @@ button {
   font-size: 16px;
   cursor: pointer;
 }
+button:disabled {
+  background-color: #ccc;   /* light gray background */
+  color: #666;              /* darker gray text */
+  cursor: not-allowed;      /* show “not-allowed” cursor */
+  opacity: 0.7;             /* slightly transparent to indicate disabled */
+}
 .message {
   margin-top: 15px;
   font-weight: bold;
@@ -224,6 +230,32 @@ li a:hover {
 
 .total-expenses .amount {
   color: #2563eb; /* blue */
+  font-weight: 700;
+}
+
+.total-salaries {
+  text-align: center; /* centers text inside the element */
+  font-size: 20px;
+  font-weight: 600;
+  color: #1f2937; /* dark gray */
+  margin-top: 16px;
+}
+
+.total-salaries .amount {
+  color: #e60b92; /* blue */
+  font-weight: 700;
+}
+
+.profits {
+  text-align: center; /* centers text inside the element */
+  font-size: 20px;
+  font-weight: 600;
+  color: #1f2937; /* dark gray */
+  margin-top: 16px;
+}
+
+.profits .amount {
+  color: #e60b92; /* blue */
   font-weight: 700;
 }
 

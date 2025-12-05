@@ -13,6 +13,7 @@ import Stats from './pages/Stats';
 import Settings from './pages/Settings';
 import History from './pages/History';
 import Insights from './pages/Insights';
+import Salaries from './pages/Salaries';
 import NoPage from './pages/NoPage';
 import './style.css';
 import { renderLoading } from './utils/helpFunctions';
@@ -111,6 +112,7 @@ const AppRoutes = React.memo(({ setSidebarOpen }) => {
         <Route path="/settings" element={<ProtectedRoute element={<Settings />} />} />
         <Route path="/history" element={<ProtectedRoute element={<History />} />} />
         <Route path="/insights" element={<ProtectedRoute element={<Insights />} />} />
+        <Route path="/salaries" element={<ProtectedRoute element={<Salaries />} />} />
         <Route path="*" element={<NoPage />} />
       </Routes>
     </>
@@ -131,5 +133,5 @@ const App = () => {
   );
 };
 
-export const Version = "Version 1.0.46";
+export const Version = "Version 1.0.47";
 export default App;

@@ -34,6 +34,7 @@ const Add = () => {
     fetchCategories();
   }, []);
 
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -64,9 +65,14 @@ const Add = () => {
       console.error('Error saving to database:', error);
       showMessage('Failed to add entry.', true);
     } finally {
-      // Remove seesion storage when expense is updated , so it will fetch again from firebase and not use cached data
-      sessionStorage.removeItem("categories");
-      sessionStorage.removeItem("subcategories");
+      // Remove session storage caches so other pages fetch fresh data
+      sessionStorage.removeItem("categories_home");
+      sessionStorage.removeItem("subcategories_home");
+      sessionStorage.removeItem("categories_edit");
+      sessionStorage.removeItem("subcategories_edit");
+      // Clear chart cache so Stats page refreshes
+      sessionStorage.removeItem("chartData");
+      sessionStorage.removeItem("total");
     }
   };
 

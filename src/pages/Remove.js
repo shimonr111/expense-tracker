@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { Version } from '../App.js';
 import { initializeCategoryDropdowns } from '../utils/loadCategories.js';
-import { submitExpense } from '../utils/saveExpenseLogic.js';
+import { db } from '../utils/firebase-config.js';
+import { ref, remove } from 'firebase/database';
+import { showMessage } from '../utils/helpFunctions.js';
 
 // Remove Page component
 const Remove = () => {
@@ -28,30 +30,28 @@ const Remove = () => {
   // Handle form submission - triggered when "Remove subcategory" button clicked
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
     // Show confirmation popup
     const confirmed = window.confirm(
-        "Are you sure? You are going to remove element from DB."
+        "Are you sure? You are going to remove element from DB"
     );
     if (!confirmed) return; // Stop if user clicks Cancel
 
-    const formData = {
-      category: selectedCategory,
-      subcategory: selectedSubcategory
-    };
-    //const success = await submitExpense(formData, true);
-    const success = false;
-    if (success) {
-      e.target.reset();
-      setSelectedCategory('');
-      setSelectedSubcategory('');
-      const subcategorySelect = document.getElementById('subcategory');
-      if (subcategorySelect) {
-        subcategorySelect.innerHTML = ''; // Clear subcategories if needed
-      }
-      // Remove seesion storage when expense is updated , so it will fetch again from firebase and not use cached data
-      sessionStorage.removeItem("categories");
-      sessionStorage.removeItem("subcategories");
+    try {
+      await remove(ref(db, `expenses/${selectedCategory}/${selectedSubcategory}`));
+      showMessage(`Subcategory ${selectedSubcategory} removed successfully`);
+      // Remove session storage caches so other pages fetch fresh data
+      sessionStorage.removeItem("categories_home");
+      sessionStorage.removeItem("subcategories_home");
+      sessionStorage.removeItem("categories_edit");
+      sessionStorage.removeItem("subcategories_edit");
+      // Clear chart cache so Stats page refreshes
+      sessionStorage.removeItem("chartData");
+      sessionStorage.removeItem("total");
+      clearDropdowns();
+      initializeCategoryDropdowns(fixedCategories);
+    } catch (error) {
+      console.error("Firebase remove error:", error);
+      showMessage("Failed to remove subcategory", true);
     }
   };
 
