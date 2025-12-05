@@ -27,7 +27,6 @@ const Insights = () => {
       setHistoryData(data);
       setSystemContext({ role: "system", content: data });
       setLoading(false);
-      console.log("Hello")
       await sendHistoryData(data, key);
     };
 

@@ -64,9 +64,10 @@ const Home = () => {
           Comment
           <input type="text" id="comment" />
         </label>
-        <label id="checkboxLabel">
-          Subtract the amount
+        <label className="switch">
           <input type="checkbox" checked={subtractAmount} onChange={(e) => setSubtractAmount(e.target.checked)}/>
+          <span className="slider"></span>
+          <span className="label-text">Subtract the amount</span>
         </label>
         <button id="saveExpenseBtn" type="submit">Save Expense</button>
         <button id="exportMonthToExcelBtn" type="button" onClick={() => exportMonthToExcel(null)}>Export month to Excel file</button>
