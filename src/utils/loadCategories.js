@@ -1,7 +1,7 @@
 import { getCurrentDateInfo } from './helpFunctions.js';
 import { db } from './firebase-config.js';
 import { ref, set, get } from "firebase/database";
-import { cleanLogFile } from '../utils/cleanLogFile.js';
+import { cleanLogFile, resetSalaries } from './cleanDb.js';
 
 // This function initialize the combo boxes of category and subcategory
 export async function initializeCategoryDropdowns(ignoreFixedAmount) {
@@ -41,6 +41,7 @@ export async function loadCategoriesAndSubcategories(categoryId, subcategoryId, 
   const subcategorySelect = document.getElementById(subcategoryId);
 
   const expensesRef = ref(db, 'expenses');
+  const salariesRef = ref(db, 'Salaries')
   await checkIfResetAllAmounts(expensesRef);
 
   try {
@@ -95,9 +96,10 @@ async function checkIfResetAllAmounts(expensesRef) {
     const sampleCategory = Object.values(data)[0];
     const sampleSubcategory = Object.values(sampleCategory)[0];
     const monthInDatabase = sampleSubcategory.month;
+    const yearInDatabase = sampleSubcategory.year;
     // If month does not match → reset all amounts
     if (currentMonth !== monthInDatabase) {
-      await backupExpensesAndLogsToHistory(data);
+      await backupExpensesAndLogsToHistory(data, monthInDatabase, yearInDatabase);
       // Reset amounts for the new month
       const updates = [];
       for (const category in data) {
@@ -118,8 +120,9 @@ async function checkIfResetAllAmounts(expensesRef) {
           updates.push(set(ref(db, expensePath), fixedData)); // Overwrite the data in the DB
         }
       }
-      // Also reset the log node
+      // Also reset the log node and the salaries
       await cleanLogFile();
+      await resetSalaries();
     }
   }
   catch (error) {
@@ -140,11 +143,8 @@ function checkIfCategoryIsNotEmpty(data, category, ignoreFixedAmount) {
 }
 
 // Save a copy of current expenses and logs into history/{month_year}
-async function backupExpensesAndLogsToHistory(expensesData) {
-  // Build key
-  const [currentYear, currentMonth] = getCurrentDateInfo();
-  const fixedCurrentMonth = currentMonth - 1; // because its back up the last month, now its first day of the new month
-  const historyKey = `${fixedCurrentMonth}_${currentYear}`; // e.g. "9_2025"
+async function backupExpensesAndLogsToHistory(expensesData, month, year) {
+  const historyKey = `${month}_${year}`; // e.g. "9_2025"
   // References
   const logsRef = ref(db, "log");
   const historyRef = ref(db, `history/${historyKey}`);
