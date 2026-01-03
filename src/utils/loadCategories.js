@@ -2,6 +2,7 @@ import { getCurrentDateInfo } from './helpFunctions.js';
 import { db } from './firebase-config.js';
 import { ref, set, get } from "firebase/database";
 import { cleanLogFile, resetSalaries } from './cleanDb.js';
+import Salaries from '../pages/Salaries.js';
 
 // This function initialize the combo boxes of category and subcategory
 export async function initializeCategoryDropdowns(ignoreFixedAmount) {
@@ -39,7 +40,6 @@ export async function initializeCategoryDropdowns(ignoreFixedAmount) {
 export async function loadCategoriesAndSubcategories(categoryId, subcategoryId, ignoreFixedAmount) {
   const categorySelect = document.getElementById(categoryId);
   const subcategorySelect = document.getElementById(subcategoryId);
-
   const expensesRef = ref(db, 'expenses');
   const salariesRef = ref(db, 'Salaries')
   await checkIfResetAllAmounts(expensesRef);
@@ -147,16 +147,19 @@ async function backupExpensesAndLogsToHistory(expensesData, month, year) {
   const historyKey = `${month}_${year}`; // e.g. "9_2025"
   // References
   const logsRef = ref(db, "log");
+  const salariesRef = ref(db, "Salaries");
   const historyRef = ref(db, `history/${historyKey}`);
-  // Fetch logs entry
   try {
-    // Fetch logs entry
+    // Fetch logs and salaries
     const logsSnap = await get(logsRef);
     const logsData = logsSnap.exists() ? logsSnap.val() : {};
-    // Save both expenses and logs under history
+    const salariesSnap = await get(salariesRef);
+    const salariesData = salariesSnap.exists() ? salariesSnap.val() : {};
+    // Save both expenses, logs and references under history
     await set(historyRef, {
       expenses: expensesData,
       log: logsData,
+      Salaries: salariesData,
     });
     console.log(`Backup saved to history/${historyKey}`);
   } catch (err) {

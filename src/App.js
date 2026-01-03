@@ -133,5 +133,5 @@ const App = () => {
   );
 };
 
-export const Version = "Version 1.0.51";
+export const Version = "Version 1.0.52";
 export default App;
