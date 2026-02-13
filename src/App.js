@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, NavLink, Navigate, useLocation} from 'react-router-dom';
 import { auth, onAuthStateChanged, signOut } from './utils/firebase-config';
 import Sidebar from "./utils/Sidebar";
-import { getDatabase, ref, get } from 'firebase/database';
 import Home from './pages/Home';
 import Edit from './pages/Edit';
 import About from './pages/About';
@@ -18,6 +17,8 @@ import NoPage from './pages/NoPage';
 import './style.css';
 import { renderLoading } from './utils/helpFunctions';
 import { FaHome, FaChartPie, FaHistory, FaLightbulb, FaSpinner } from 'react-icons/fa';
+import axios from 'axios';
+import api from "./utils/api";
 
 const AppRoutes = React.memo(({ setSidebarOpen }) => {
   const [user, setUser] = useState(null);
@@ -31,12 +32,22 @@ const AppRoutes = React.memo(({ setSidebarOpen }) => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => { // Firebase method that fires when the user's auth changes
       setUser(currentUser); // Store the current Firebase user
       if (currentUser) { // If user is not null, check if the current user is allowed based on the data in the DB
-        const emailKey = currentUser.email.replace(/\./g, '_');
-        const db = getDatabase();
-        const snapshot = await get(ref(db, `allowed_users/${emailKey}`));
-        const isAllowed = snapshot.exists() && snapshot.val() === true;
-        setIsAuthorized(isAllowed);
-        if (!isAllowed) {
+        // Send POST request with the email to the Backend
+        const response = await api.post("/login/check-user", {
+          email: currentUser.email
+        });
+        console.log(currentUser.email)
+
+        // Backend returns { allowed: true, token: "JWT_TOKEN" } if allowed
+        const { allowed, token } = response.data;
+        console.log(allowed)
+        console.log(token)
+        setIsAuthorized(allowed);
+        if (allowed && token) {
+          localStorage.setItem("jwtToken", token); // save token for future calls
+        }
+        
+        if (!allowed) {
         alert("You are not allowed to access this app.");
         await signOut(auth);
         }
@@ -133,5 +144,5 @@ const App = () => {
   );
 };
 
-export const Version = "Version 1.0.52";
+export const Version = "Version 1.0.53";
 export default App;

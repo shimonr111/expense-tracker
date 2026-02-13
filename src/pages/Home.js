@@ -5,6 +5,7 @@ import { exportMonthToExcel } from '../utils/exportMonthToExcel.js';
 import { exportLogFile } from '../utils/exportLogFile.js';
 import { Version } from '../App.js';
 import { renderSmallLoading } from '../utils/helpFunctions.js';
+import axios from 'axios';
 
 // Home Page Component 
 const Home = () => {

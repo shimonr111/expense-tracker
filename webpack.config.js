@@ -3,6 +3,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
 const isProd = process.env.NODE_ENV === 'production';
 const webpack = require('webpack');
+require('dotenv').config();
 
 module.exports = {
   entry: './src/index.js',  // Entry file
@@ -37,6 +38,8 @@ module.exports = {
     }),
     new webpack.DefinePlugin({
       'process.env.PUBLIC_URL': JSON.stringify(isProd ? '/expense-tracker' : ''),
+      'process.env.REACT_APP_API_BASE_URL': JSON.stringify(process.env.REACT_APP_API_BASE_URL),
+      'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV)
     }),
     new CopyPlugin({
       patterns: [
