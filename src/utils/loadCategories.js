@@ -1,26 +1,25 @@
-import { getCurrentDateInfo } from './helpFunctions.js';
-import { db } from './firebase-config.js';
-import { ref, set, get } from "firebase/database";
-import { cleanLogFile, resetSalaries } from './cleanDb.js';
-import Salaries from '../pages/Salaries.js';
+import { fetchExpenses } from "../api/expensesService.js";
+import { mapCategories } from "../services/expensesMapper.js";
+import { ensureMonthlyReset } from "../services/expenseMaintenanceService.js";
+import { populateCategoryDropdown, populateSubcategoryDropdown} from "../ui/dropdown.js"
+import { getSessionCache, setSessionCache } from "./cache.js";
 
 // This function initialize the combo boxes of category and subcategory
 export async function initializeCategoryDropdowns(ignoreFixedAmount) {
   // Use different sessionStorage keys for Home and Edit pages
   const categoriesCacheKey = ignoreFixedAmount ? "categories_home" : "categories_edit";
   const subcategoriesCacheKey = ignoreFixedAmount ? "subcategories_home" : "subcategories_edit";
-
   // Fetch cached data for categories and subcategories based on the current page
-  let cachedCategories = sessionStorage.getItem(categoriesCacheKey);
-  let cachedSubcategories = sessionStorage.getItem(subcategoriesCacheKey);
+  const cachedCategories = getSessionCache(categoriesCacheKey);
+  const cachedSubcategories = getSessionCache(subcategoriesCacheKey);
 
   const categorySelect = document.getElementById('category');
   const subcategorySelect = document.getElementById('subcategory');
   
   if (cachedCategories && cachedSubcategories) { // Use the cached data from Home page
     console.log(`Using cached data from ${ignoreFixedAmount ? 'home' : 'edit'} page...`);
-    const categoriesData = JSON.parse(cachedCategories);
-    const subcategoriesData = JSON.parse(cachedSubcategories);
+    const categoriesData = cachedCategories;
+    const subcategoriesData = cachedSubcategories;
     populateCategoryDropdown(categorySelect, categoriesData);
     categorySelect.addEventListener('change', () => {
       const selectedCategory = categorySelect.value;
@@ -31,8 +30,8 @@ export async function initializeCategoryDropdowns(ignoreFixedAmount) {
   else { // There is no cached data so fetch from firebase
     console.log("Fetching from Firebase first...")
     const { categories, subcategories } = await loadCategoriesAndSubcategories('category', 'subcategory', ignoreFixedAmount);
-    sessionStorage.setItem(categoriesCacheKey, JSON.stringify(categories));
-    sessionStorage.setItem(subcategoriesCacheKey, JSON.stringify(subcategories));
+    setSessionCache(categoriesCacheKey, categories);
+    setSessionCache(subcategoriesCacheKey, subcategories);
   }
 }
 
@@ -40,29 +39,13 @@ export async function initializeCategoryDropdowns(ignoreFixedAmount) {
 export async function loadCategoriesAndSubcategories(categoryId, subcategoryId, ignoreFixedAmount) {
   const categorySelect = document.getElementById(categoryId);
   const subcategorySelect = document.getElementById(subcategoryId);
-  const expensesRef = ref(db, 'expenses');
-  const salariesRef = ref(db, 'Salaries')
-  await checkIfResetAllAmounts(expensesRef);
+  await ensureMonthlyReset();
 
   try {
-    const snapshot = await get(expensesRef);
-    const data = snapshot.val();
-    if (!data) return { categories: {}, subcategories: {} };
+    const data = await fetchExpenses();
+    if (!data) return;
 
-    const categories = {};
-    const subcategories = {};
-
-    for (const category in data) {
-      if (checkIfCategoryIsNotEmpty(data, category, ignoreFixedAmount)) {
-        categories[category] = category;
-        subcategories[category] = {};
-        for (const sub in data[category]) {
-          const subData = data[category][sub];
-          if ((ignoreFixedAmount && subData["fixed amount"]) || (!ignoreFixedAmount && !subData["fixed amount"])) continue;
-          subcategories[category][sub] = subData;
-        }
-      }
-    }
+    const { categories, subcategories } = mapCategories(data, ignoreFixedAmount);
 
     // Populate DOM
     populateCategoryDropdown(categorySelect, categories);
@@ -78,114 +61,3 @@ export async function loadCategoriesAndSubcategories(categoryId, subcategoryId, 
     return { categories: {}, subcategories: {} };
   }
 }
-
-
-// This function is responsible if there is need to reset the entire amounts if it's a new month
-async function checkIfResetAllAmounts(expensesRef) {
-  const [currentYear, currentMonth, currentTime] = getCurrentDateInfo();
-
-  try {
-    const snapshot = await get(expensesRef); // await here
-    const data = snapshot.val();
-    if (!data) {
-      alert("Expense not found.");
-      return;
-    }
-
-    // Check one sample to compare month
-    const sampleCategory = Object.values(data)[0];
-    const sampleSubcategory = Object.values(sampleCategory)[0];
-    const monthInDatabase = sampleSubcategory.month;
-    const yearInDatabase = sampleSubcategory.year;
-    // If month does not match → reset all amounts
-    if (currentMonth !== monthInDatabase) {
-      await backupExpensesAndLogsToHistory(data, monthInDatabase, yearInDatabase);
-      // Reset amounts for the new month
-      const updates = [];
-      for (const category in data) {
-        for (const subcategory in data[category]) {
-          const expensePath = `expenses/${category}/${subcategory}`;
-          const existingFixed = data[category][subcategory]["fixed amount"] || false;
-          let newAmount = existingFixed ? data[category][subcategory]["amount"] : 0;
-          // Prepare the data
-          const fixedData = {
-                amount: newAmount,
-                category,
-                subcategory,
-                year: currentYear,
-                month: currentMonth,
-                time: currentTime,
-                "fixed amount": existingFixed
-          };
-          updates.push(set(ref(db, expensePath), fixedData)); // Overwrite the data in the DB
-        }
-      }
-      // Also reset the log node and the salaries
-      await cleanLogFile();
-      await resetSalaries();
-    }
-  }
-  catch (error) {
-    console.error("Error fetching expense:", error);
-  }
-}
-
-// Check if category is not empty based on the condition, if its Home page or Edit page
-// Home page display the subcategories that are not fixed amount
-// Edit page displplay the subcategories that are fixed amount
-function checkIfCategoryIsNotEmpty(data, category, ignoreFixedAmount) {
-  const subcategories = data[category];
-  for (const sub in subcategories) {
-    const isFixed = subcategories[sub]["fixed amount"];
-    if (ignoreFixedAmount ? !isFixed : isFixed) return true;
-  }
-  return false;
-}
-
-// Save a copy of current expenses and logs into history/{month_year}
-async function backupExpensesAndLogsToHistory(expensesData, month, year) {
-  const historyKey = `${month}_${year}`; // e.g. "9_2025"
-  // References
-  const logsRef = ref(db, "log");
-  const salariesRef = ref(db, "Salaries");
-  const historyRef = ref(db, `history/${historyKey}`);
-  try {
-    // Fetch logs and salaries
-    const logsSnap = await get(logsRef);
-    const logsData = logsSnap.exists() ? logsSnap.val() : {};
-    const salariesSnap = await get(salariesRef);
-    const salariesData = salariesSnap.exists() ? salariesSnap.val() : {};
-    // Save both expenses, logs and references under history
-    await set(historyRef, {
-      expenses: expensesData,
-      log: logsData,
-      Salaries: salariesData,
-    });
-    console.log(`Backup saved to history/${historyKey}`);
-  } catch (err) {
-    console.error("Error while backing up:", err);
-  }
-}
-
-export function populateCategoryDropdown(selectElement, categories) {
-  selectElement.innerHTML = '<option value="" disabled selected style="color: gray;">בחר קטגוריה ראשית</option>';
-  Object.keys(categories).forEach(cat => {
-    const option = document.createElement('option');
-    option.value = cat;
-    option.textContent = cat;
-    selectElement.appendChild(option);
-  });
-}
-
-export function populateSubcategoryDropdown(selectElement, subcategories) {
-  selectElement.innerHTML = '<option value="" disabled selected style="color: gray;">בחר קטגוריה משנית</option>';
-  Object.keys(subcategories).forEach(sub => {
-    const option = document.createElement('option');
-    option.value = sub;
-    option.textContent = sub;
-    selectElement.appendChild(option);
-  });
-  selectElement.disabled = false;
-}
-
-

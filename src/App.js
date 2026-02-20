@@ -17,8 +17,7 @@ import NoPage from './pages/NoPage';
 import './style.css';
 import { renderLoading } from './utils/helpFunctions';
 import { FaHome, FaChartPie, FaHistory, FaLightbulb, FaSpinner } from 'react-icons/fa';
-import axios from 'axios';
-import api from "./utils/api";
+import { checkUser } from "./api/authService";
 
 const AppRoutes = React.memo(({ setSidebarOpen }) => {
   const [user, setUser] = useState(null);
@@ -33,15 +32,10 @@ const AppRoutes = React.memo(({ setSidebarOpen }) => {
       setUser(currentUser); // Store the current Firebase user
       if (currentUser) { // If user is not null, check if the current user is allowed based on the data in the DB
         // Send POST request with the email to the Backend
-        const response = await api.post("/login/check-user", {
-          email: currentUser.email
-        });
-        console.log(currentUser.email)
+        const data = await checkUser(currentUser.email);
 
         // Backend returns { allowed: true, token: "JWT_TOKEN" } if allowed
-        const { allowed, token } = response.data;
-        console.log(allowed)
-        console.log(token)
+        const { allowed, token } = data;
         setIsAuthorized(allowed);
         if (allowed && token) {
           localStorage.setItem("jwtToken", token); // save token for future calls
@@ -144,5 +138,5 @@ const App = () => {
   );
 };
 
-export const Version = "Version 1.0.53";
+export const Version = "Version 1.0.54";
 export default App;
