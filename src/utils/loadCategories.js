@@ -1,6 +1,5 @@
-import { fetchExpenses } from "../api/expensesService.js";
+import { fetchExpenses, resetExpenses } from "../api/expensesService.js";
 import { mapCategories } from "../services/expensesMapper.js";
-import { ensureMonthlyReset } from "../services/expenseMaintenanceService.js";
 import { populateCategoryDropdown, populateSubcategoryDropdown} from "../ui/dropdown.js"
 import { getSessionCache, setSessionCache } from "./cache.js";
 
@@ -39,7 +38,8 @@ export async function initializeCategoryDropdowns(ignoreFixedAmount) {
 export async function loadCategoriesAndSubcategories(categoryId, subcategoryId, ignoreFixedAmount) {
   const categorySelect = document.getElementById(categoryId);
   const subcategorySelect = document.getElementById(subcategoryId);
-  await ensureMonthlyReset();
+  const resetResponse = await resetExpenses(); // Just check if reset is needed - for cases it's a new month
+  console.log(resetResponse);
 
   try {
     const data = await fetchExpenses();
