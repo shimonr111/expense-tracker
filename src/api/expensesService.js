@@ -9,3 +9,8 @@ export async function resetExpenses() {
     const response = await api.post("/expenses/monthly-reset");
     return response.data;
 }
+
+export async function addExpense(expenseData) {
+    const response = await api.post("/expenses/add-expense", expenseData);
+    return response.data;
+}

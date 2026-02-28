@@ -1,6 +1,6 @@
-import { ref, get, set } from 'firebase/database';
-import { db, auth} from './firebase-config.js';
-import { showMessage, getCurrentDateInfo } from './helpFunctions.js';
+import { auth} from './firebase-config.js';
+import { showMessage } from './helpFunctions.js';
+import { addExpense } from "../api/expensesService.js";
 
 const form = document.getElementById('expenseForm');
 
@@ -12,7 +12,6 @@ export async function submitExpense(formData, isFixedAmount, comment = null) {
   let amount = parseFloat(formData.amount);
   const category = formData.category;
   const subcategory = formData.subcategory;
-  const [year, month, time] = getCurrentDateInfo();
   // If one of the fields empty then notify about that
   if (amount === "" || isNaN(amount) || !category || !subcategory) {
     showMessage("Please enter amount and select category", true);
@@ -21,42 +20,26 @@ export async function submitExpense(formData, isFixedAmount, comment = null) {
 
   // Set the update expense in the Firebase DB under the specified category
   try {
-    const expenseRef = ref(db, `expenses/${category}/${subcategory}`);
-    const snapshot = await get(expenseRef);
-    const existing = snapshot.val();
-    const newAmount = isFixedAmount ? amount : (existing ? parseFloat(existing.amount) : 0) + amount;
     const expenseData = {
-      amount: newAmount,
+      amount,
       category,
       subcategory,
-      year,
-      month,
-      time,
-      "fixed amount": isFixedAmount
-  };
-  await set(expenseRef, expenseData);
+      email :auth.currentUser.email,
+      comment,
+      isFixedAmount
+    };
+    const data = await addExpense(expenseData);
+    if (!data) return;
 
-  // Set the update expense in the Firebase DB under logs
-  const logKey = `${time.replace(/:/g, '-')}-${month}-${year}`;
-  const logRef = ref(db, `log/${logKey}`);
-  const logData = {
-    amount,
-    category,
-    subcategory,
-    user: auth.currentUser.email,
-    comment
-  };
-  await set(logRef, logData);
-
-  showMessage(`Expense for ${subcategory} of ${amount.toFixed(2)} ILS saved successfully!`, false);
-  // Remove seesion storage when expense is updated , so it will fetch again from firebase and not use cached data
-  sessionStorage.removeItem("months");
-  sessionStorage.removeItem("selectedMonth");
-  sessionStorage.removeItem("lastExpenses");
-  sessionStorage.removeItem("chartData");
-  sessionStorage.removeItem("total");
-  sessionStorage.removeItem("apiKey");
-  return true;  // success
+    showMessage(`Expense for ${subcategory} of ${amount.toFixed(2)} ILS saved successfully!`, false);
+    // Remove seesion storage when expense is updated , so it will fetch again from firebase and not use cached data
+    sessionStorage.removeItem("months");
+    sessionStorage.removeItem("selectedMonth");
+    sessionStorage.removeItem("lastExpenses");
+    sessionStorage.removeItem("chartData");
+    sessionStorage.removeItem("total");
+    sessionStorage.removeItem("apiKey");
+    return true;  // success
   } catch (error) {
     showMessage("Error saving expense: " + error.message, true);
     return false; // failure
