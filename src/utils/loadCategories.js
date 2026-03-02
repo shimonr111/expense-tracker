@@ -38,11 +38,17 @@ export async function initializeCategoryDropdowns(ignoreFixedAmount) {
 export async function loadCategoriesAndSubcategories(categoryId, subcategoryId, ignoreFixedAmount) {
   const categorySelect = document.getElementById(categoryId);
   const subcategorySelect = document.getElementById(subcategoryId);
-  const resetResponse = await resetExpenses(); // Just check if reset is needed - for cases it's a new month
-  console.log(resetResponse);
+  let resetResponse;
+  try {
+    resetResponse = await resetExpenses();
+  } catch (err) {
+    resetResponse = { message: err.response?.data?.message ?? err.message };
+  }
+  console.log("Reset response:", resetResponse.message);
 
   try {
     const data = await fetchExpenses();
+    console.log(data);
     if (!data) return;
 
     const { categories, subcategories } = mapCategories(data, ignoreFixedAmount);
