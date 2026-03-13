@@ -48,7 +48,6 @@ export async function loadCategoriesAndSubcategories(categoryId, subcategoryId, 
 
   try {
     const data = await fetchExpenses();
-    console.log(data);
     if (!data) return;
 
     const { categories, subcategories } = mapCategories(data, ignoreFixedAmount);

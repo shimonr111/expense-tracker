@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer, CartesianGrid, Cell, LabelList } from 'recharts';
-import { db } from '../utils/firebase-config.js';
-import { ref, get } from 'firebase/database';
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Cell, LabelList } from 'recharts';
+import { fetchExpenses } from "../api/expensesService.js";
+import { fetchSalaries } from "../api/salariesService.js";
 import { Version } from '../App.js';
 import { renderLoading } from '../utils/helpFunctions.js';
+import { getSessionCache, setSessionCache } from "../utils/cache.js";
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#AA46BE', '#FF5F7E'];
 
@@ -17,29 +18,28 @@ const Stats = () => {
   // Implemented in the background - right after the page is loaded
   useEffect(() => {
     // Reads a cached value (if exist) from earlier visit in the same session
-    const cachedChartData = sessionStorage.getItem("chartData");
-    const cachedTotal = sessionStorage.getItem("total");
-    const cachedSalaries = sessionStorage.getItem("totalSalaries");
-    const cachedProfits = sessionStorage.getItem("profits");
+    const cachedChartData = getSessionCache("chartData");
+    const cachedTotal = getSessionCache("total");
+    const cachedSalaries = getSessionCache("totalSalaries");
+    const cachedProfits = getSessionCache("profits");
 
     if (cachedChartData && cachedTotal && cachedSalaries && cachedProfits) { // If cached, show it immediately without extracting from firebase
-      setChartData(JSON.parse(cachedChartData));
-      setTotal(JSON.parse(cachedTotal));
-      setTotalSalaries(JSON.parse(cachedSalaries));
-      setProfits(JSON.parse(cachedProfits));
+      setChartData(cachedChartData);
+      setTotal(cachedTotal);
+      setTotalSalaries(cachedSalaries);
+      setProfits(cachedProfits);
       setLoading(false);
       return;
     }
 
-    const fetchExpenses = async () => {
+    const fetchExpensesFromDb = async () => {
       try {
         setLoading(true);
         // Get reference to the expenses in the data base
-        const expensesRef = ref(db, 'expenses');
-        const snapshot = await get(expensesRef);
+        const data = await fetchExpenses();
+        console.log(data)
 
-        if (snapshot.exists()) {
-          const data = snapshot.val();
+        if (data) {
           const categoryTotals = {};
           let grandTotal = 0;
 
@@ -70,21 +70,19 @@ const Stats = () => {
           setChartData(formattedData);
           setTotal(grandTotal.toFixed(2));
 
-          const salariesRef = ref(db, 'Salaries');
-          const salariesSnap = await get(salariesRef);
+
           let salariesTotal = 0;
-          if (salariesSnap.exists()) {
-            const salaries = salariesSnap.val();
-            salariesTotal = Object.values(salaries).reduce((sum, val) => sum + (parseFloat(val) || 0), 0);
-          }
+          const salaries = await fetchSalaries();
+          salariesTotal = Object.values(salaries).reduce((sum, val) => sum + (parseFloat(val) || 0), 0);
           setTotalSalaries(salariesTotal.toFixed(2));
           // Calculate profits
-          setProfits((salariesTotal - grandTotal).toFixed(2));
-          
-          sessionStorage.setItem("chartData", JSON.stringify(formattedData));
-          sessionStorage.setItem("total", JSON.stringify(grandTotal.toFixed(2)));
-          sessionStorage.setItem("totalSalaries", JSON.stringify(salariesTotal.toFixed(2)));
-          sessionStorage.setItem("profits", JSON.stringify((salariesTotal - grandTotal).toFixed(2)));
+          const calculatedProfits = (salariesTotal - grandTotal).toFixed(2);
+          setProfits(calculatedProfits);
+          // Save to session cache
+          setSessionCache("chartData", formattedData);
+          setSessionCache("total", grandTotal.toFixed(2));
+          setSessionCache("totalSalaries", salariesTotal.toFixed(2));
+          setSessionCache("profits", calculatedProfits);
         } else {
           setChartData([]);
           setTotal(0);
@@ -95,7 +93,7 @@ const Stats = () => {
         setLoading(false);
       }
     };
-    fetchExpenses();
+    fetchExpensesFromDb();
   }, []);
 
   const CustomTooltip = ({ active, payload }) => {
