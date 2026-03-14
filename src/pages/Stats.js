@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Cell, LabelList } from 'recharts';
-import { fetchExpenses } from "../api/expensesService.js";
-import { fetchSalaries } from "../api/salariesService.js";
 import { Version } from '../App.js';
+import { getStatsData } from '../services/statsService.js';
 import { renderLoading } from '../utils/helpFunctions.js';
 import { getSessionCache, setSessionCache } from "../utils/cache.js";
+import { StatsChart } from '../ui/StatsChart.jsx';
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#AA46BE', '#FF5F7E'];
 
@@ -18,83 +17,35 @@ const Stats = () => {
   // Implemented in the background - right after the page is loaded
   useEffect(() => {
     // Reads a cached value (if exist) from earlier visit in the same session
-    const cachedChartData = getSessionCache("chartData");
-    const cachedTotal = getSessionCache("total");
-    const cachedSalaries = getSessionCache("totalSalaries");
-    const cachedProfits = getSessionCache("profits");
-
-    if (cachedChartData && cachedTotal && cachedSalaries && cachedProfits) { // If cached, show it immediately without extracting from firebase
-      setChartData(cachedChartData);
-      setTotal(cachedTotal);
-      setTotalSalaries(cachedSalaries);
-      setProfits(cachedProfits);
-      setLoading(false);
+    const cached = getSessionCache("statsData");
+    if (cached) {
+      setChartData(cached.formattedData);
+      setTotal(cached.grandTotal);
+      setTotalSalaries(cached.totalSalaries);
+      setProfits(cached.profits);
       return;
     }
 
     const fetchExpensesFromDb = async () => {
-      try {
+
         setLoading(true);
-        // Get reference to the expenses in the data base
-        const data = await fetchExpenses();
-        console.log(data)
-
-        if (data) {
-          const categoryTotals = {};
-          let grandTotal = 0;
-
-          // Iterate over subcategories and calc the amount for each category, in addition calc the total amount
-          for (const category in data) {
-            const subcategories = data[category];
-            let categorySum = 0;
-
-            for (const subcategory in subcategories) {
-              const amount = subcategories[subcategory]?.amount ?? 0;
-              categorySum += parseFloat(amount) || 0;
-            }
-
-            categoryTotals[category] = (categoryTotals[category] || 0) + categorySum;
-            grandTotal += categorySum;
-          }
-
-          // Convert to recharts format
-          const formattedData = Object.entries(categoryTotals).map(([category, amount]) => ({
-            name: category,
-            amount: parseFloat(amount.toFixed(2)),
-            subcategories: Object.entries(data[category]).map(([sub, obj]) => ({
-              name: sub,
-              amount: parseFloat(obj?.amount ?? 0)
-            }))
-          }));
-
-          setChartData(formattedData);
-          setTotal(grandTotal.toFixed(2));
-
-
-          let salariesTotal = 0;
-          const salaries = await fetchSalaries();
-          salariesTotal = Object.values(salaries).reduce((sum, val) => sum + (parseFloat(val) || 0), 0);
-          setTotalSalaries(salariesTotal.toFixed(2));
-          // Calculate profits
-          const calculatedProfits = (salariesTotal - grandTotal).toFixed(2);
-          setProfits(calculatedProfits);
-          // Save to session cache
-          setSessionCache("chartData", formattedData);
-          setSessionCache("total", grandTotal.toFixed(2));
-          setSessionCache("totalSalaries", salariesTotal.toFixed(2));
-          setSessionCache("profits", calculatedProfits);
-        } else {
-          setChartData([]);
-          setTotal(0);
-        }
-      } catch (err) {
-        console.error('Error fetching expenses:', err);
-      } finally {
+        const data = await getStatsData();
+        const normalizedData = {
+            formattedData: data.formattedData,
+            grandTotal: data.grandTotal.toFixed(2),
+            totalSalaries: data.salariesTotal.toFixed(2),
+            profits: (data.salariesTotal - data.grandTotal).toFixed(2)
+        };
+        setChartData(normalizedData.formattedData);
+        setTotal(normalizedData.grandTotal);
+        setTotalSalaries(normalizedData.totalSalaries);
+        setProfits(normalizedData.profits);
+        setSessionCache("statsData", normalizedData);
         setLoading(false);
-      }
-    };
-    fetchExpensesFromDb();
-  }, []);
+      };
+
+      fetchExpensesFromDb();
+    }, []);
 
   const CustomTooltip = ({ active, payload }) => {
   if (active && payload && payload.length) {
@@ -124,20 +75,7 @@ const Stats = () => {
   return (
     <div>
       <h1>Overview</h1>
-      <ResponsiveContainer width="100%" height={400}>
-        <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }} barCategoryGap="40%">
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="name" interval={0} tick={{ fontSize: 12 }} angle={-20} textAnchor="end"/>
-          <YAxis />
-          <Tooltip content={<CustomTooltip />} />
-          <Bar dataKey="amount" fill="#0088FE">
-            {chartData.map((entry, index) => (
-              <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-            ))}
-            <LabelList dataKey="amount" position="top" />
-          </Bar>
-        </BarChart>
-      </ResponsiveContainer>
+      <StatsChart data={chartData} colors={COLORS} CustomTooltip={CustomTooltip} />
       <p className="total-expenses">
         Total Expenses: <span className="amount">{total}</span>
       </p>

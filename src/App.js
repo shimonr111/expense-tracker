@@ -32,10 +32,8 @@ const AppRoutes = React.memo(({ setSidebarOpen }) => {
       setUser(currentUser); // Store the current Firebase user
       if (currentUser) { // If user is not null, check if the current user is allowed based on the data in the DB
         // Send POST request with the email to the Backend
-        console.time("checkUser");
         const firebaseToken = await currentUser.getIdToken(); // Get the firebase toekn of the current user
         const data = await checkUser(firebaseToken); // Check if this user mail existed in DB based on the Firebase Token
-        console.timeEnd("checkUser");
 
         // Backend returns { allowed: true, token: "JWT_TOKEN" } if allowed
         const { allowed, token } = data;

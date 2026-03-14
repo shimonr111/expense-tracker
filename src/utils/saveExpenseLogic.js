@@ -36,7 +36,7 @@ export async function submitExpense(formData, isFixedAmount, comment = null) {
     sessionStorage.removeItem("months");
     sessionStorage.removeItem("selectedMonth");
     sessionStorage.removeItem("lastExpenses");
-    sessionStorage.removeItem("chartData");
+    sessionStorage.removeItem("statsData");
     sessionStorage.removeItem("total");
     sessionStorage.removeItem("apiKey");
     return true;  // success
