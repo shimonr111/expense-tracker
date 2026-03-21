@@ -1,5 +1,6 @@
 import React from 'react';
 import { useState } from "react";
+import Loading from '../ui/Loading';
 
 // This function is responsible to display the feedback message after the user click on 'Save Expense' button
 export function showMessage(msg, isError) {
@@ -83,27 +84,28 @@ export function formatTimestamp(input) {
   return `${formattedDate}\n${weekday}\nat ${formattedTime}`;
 }
 
-export function renderLoading(text) {
-  return (
-    <div style={{
-      display: "flex",
-      flexDirection: "column",
-      justifyContent: "center",
-      alignItems: "center",
-      height: "100vh"
-    }}>
-      <div style={{
-        border: "6px solid #f3f3f3",
-        borderTop: "6px solid #3498db",
-        borderRadius: "50%",
-        width: "50px",
-        height: "50px",
-        animation: "spin 1s linear infinite"
-      }} />
-      <p style={{ marginTop: "12px", fontSize: "14px", color: "#444" }}>{text}</p>
-    </div>
-  );
-}
+// export function renderLoading(text) {
+//   return (
+//     <div style={{
+//       display: "flex",
+//       flexDirection: "column",
+//       justifyContent: "center",
+//       alignItems: "center",
+//       height: "100vh"
+//     }}>
+//       <div style={{
+//         border: "6px solid #f3f3f3",
+//         borderTop: "6px solid #3498db",
+//         borderRadius: "50%",
+//         width: "50px",
+//         height: "50px",
+//         animation: "spin 1s linear infinite"
+//       }} />
+//       <p style={{ marginTop: "12px", fontSize: "14px", color: "#444" }}>{text}</p>
+//     </div>
+//   );
+// }
+export const renderLoading = (message) => <Loading message={message} />;
 
 export function renderSmallLoading(text) {
   return (
