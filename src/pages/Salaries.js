@@ -45,7 +45,7 @@ const Salaries = () => {
   };
 
   return (
-    <div>
+    <div className="page-container">
       <h1>Update Salaries</h1>
       <form>
         <label>

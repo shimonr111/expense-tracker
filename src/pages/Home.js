@@ -44,7 +44,7 @@ const Home = () => {
   };
 
   return (
-    <div>
+    <div className="page-container">
       <h1>Update new expense</h1>
       <form id="expenseForm" onSubmit={handleSubmit}>
       <label>

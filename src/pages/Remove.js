@@ -56,7 +56,7 @@ const Remove = () => {
   };
 
   return (
-    <div>
+    <div className="page-container">
       <h1>Remove Subcategory</h1>
       <form id="expenseForm" onSubmit={handleSubmit}>
         <label className="switch">

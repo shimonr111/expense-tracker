@@ -77,7 +77,7 @@ const Add = () => {
   };
 
   return (
-    <div>
+    <div className="page-container">
       <h1>Add new field</h1>
       <form onSubmit={handleSubmit}>
         <label>

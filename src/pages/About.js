@@ -3,7 +3,7 @@ import { Version } from '../App.js';
 
 // About Page Component 
 const About = () => (
-  <div>
+  <div className="page-container">
     <h1>About</h1>
     <p>This app was developed to manage expenses easily and efficiently.</p>
     

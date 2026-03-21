@@ -83,7 +83,7 @@ const Insights = () => {
   if (!apiKey) return renderLoading("Loading..."); // if API key is not loaded yet, show a loading message
 
   return (
-    <div>
+    <div className="page-container">
       <h1>Insights</h1>
       <div className="chat-container">
         <div ref={chatContainerRef} className="chat-messages" style={{ maxHeight: "400px", overflowY: "auto", WebkitOverflowScrolling: "touch" }}>

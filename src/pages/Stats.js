@@ -73,7 +73,7 @@ const Stats = () => {
 
 
   return (
-    <div>
+    <div className="page-container">
       <h1>Overview</h1>
       <StatsChart data={chartData} colors={COLORS} CustomTooltip={CustomTooltip} />
       <p className="total-expenses">
