@@ -1,7 +1,9 @@
-body {
+html, body {
+  height: 100%;
   margin: 0;
+  padding: 0;
+  background: linear-gradient(135deg, #6dd5fa, #2980b9);
   font-family: Arial, sans-serif;
-  padding: 10px;
 }
 .page-container {
   max-width: 400px;

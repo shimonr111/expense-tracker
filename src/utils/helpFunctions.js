@@ -84,51 +84,26 @@ export function formatTimestamp(input) {
   return `${formattedDate}\n${weekday}\nat ${formattedTime}`;
 }
 
-// export function renderLoading(text) {
-//   return (
-//     <div style={{
-//       display: "flex",
-//       flexDirection: "column",
-//       justifyContent: "center",
-//       alignItems: "center",
-//       height: "100vh"
-//     }}>
-//       <div style={{
-//         border: "6px solid #f3f3f3",
-//         borderTop: "6px solid #3498db",
-//         borderRadius: "50%",
-//         width: "50px",
-//         height: "50px",
-//         animation: "spin 1s linear infinite"
-//       }} />
-//       <p style={{ marginTop: "12px", fontSize: "14px", color: "#444" }}>{text}</p>
-//     </div>
-//   );
-// }
-export const renderLoading = (message) => <Loading message={message} />;
-
 export function renderSmallLoading(text) {
   return (
     <div style={{
       display: "flex",
-      justifyContent: "center", // horizontal centering
-      alignItems: "center",     // vertical centering
-      height: "100%",           // fill parent container vertically
-      width: "100%",            // fill parent container horizontally
+      flexDirection: "column",
+      justifyContent: "center",
+      alignItems: "center",
+      height: "100vh"
     }}>
-      <div style={{ display: "inline-flex", alignItems: "center" }}>
-        <div style={{
-          border: "4px solid #f3f3f3",
-          borderTop: "4px solid #3498db",
-          borderRadius: "50%",
-          width: "20px",
-          height: "20px",
-          animation: "spin 1s linear infinite"
-        }} />
-        {text && <span style={{ marginLeft: "6px", fontSize: "16px", color: "#444" }}>{text}</span>}
-      </div>
+      <div style={{
+        border: "6px solid #f3f3f3",
+        borderTop: "6px solid #3498db",
+        borderRadius: "50%",
+        width: "50px",
+        height: "50px",
+        animation: "spin 1s linear infinite"
+      }} />
+      <p style={{ marginTop: "12px", fontSize: "14px", color: "#444" }}>{text}</p>
     </div>
   );
 }
 
-
+export const renderLoading = (message) => <Loading message={message} />;

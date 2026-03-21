@@ -3,7 +3,7 @@ import { Version } from '../App.js';
 import { getHuggingFaceKey, db } from '../utils/firebase-config.js';
 import { sendMessage, sendHistoryData } from '../utils/apiCalls.js';
 import { ref, get } from "firebase/database";
-import { renderLoading } from '../utils/helpFunctions.js';
+import { renderSmallLoading } from '../utils/helpFunctions.js';
 
 // This component represents the "Insights" page
 const Insights = () => {
@@ -80,7 +80,7 @@ const Insights = () => {
   };
 
   if (error) return <p style={{ color: "red" }}>{error}</p>; // if there is an error, show it in red text
-  if (!apiKey) return renderLoading("Loading..."); // if API key is not loaded yet, show a loading message
+  if (!apiKey) return renderSmallLoading("Loading..."); // if API key is not loaded yet, show a loading message
 
   return (
     <div className="page-container">

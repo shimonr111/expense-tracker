@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Version } from '../App.js';
 import { getStatsData } from '../services/statsService.js';
-import { renderLoading } from '../utils/helpFunctions.js';
+import { renderSmallLoading } from '../utils/helpFunctions.js';
 import { getSessionCache, setSessionCache } from "../utils/cache.js";
 import { StatsChart } from '../ui/StatsChart.jsx';
 
@@ -68,7 +68,7 @@ const Stats = () => {
     return null;
   };
 
-  if (loading) return renderLoading("Loading...");
+  if (loading) return renderSmallLoading("Loading...");
   if (chartData.length === 0) return <p>No expense data available.</p>;
 
 
