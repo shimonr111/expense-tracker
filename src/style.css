@@ -1,10 +1,20 @@
-html, body {
-  height: 100%;
-  margin: 0;
-  padding: 0;
-  background: linear-gradient(135deg, #6dd5fa, #2980b9);
-  font-family: Arial, sans-serif;
+html {
+  background: linear-gradient(135deg, #afe9e4, #84e4df);
 }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: Arial, sans-serif;
+  background: transparent;
+}
+
+#root {
+  min-height: 100vh;
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
 .page-container {
   max-width: 400px;
   margin: 20px auto;
