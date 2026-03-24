@@ -9,7 +9,7 @@ const Loading = ({ message = "Loading your Expense Tracker..." }) => {
       alignItems: 'center',
       minHeight: '100vh',
       width: '100%',
-      background: 'linear-gradient(135deg, #6dd5fa, #2980b9)'
+      background: 'linear-gradient(135deg, #afe9e4, #84e4df)'
     }}>
       
       <div style={{
