@@ -75,7 +75,7 @@ const Settings = () => {
           <p><strong>Name:</strong> {profile.displayName}</p>
           <p><strong>Email:</strong> {profile.email}</p>
           <p><strong>Role:</strong> {profile.role}</p>
-          <button disabled onClick={() => setEditing(true)}>Edit</button>
+          <button id="generalBtn" disabled onClick={() => setEditing(true)} className="action-btn">Edit</button>
         </div>
       ) : (
         <div>

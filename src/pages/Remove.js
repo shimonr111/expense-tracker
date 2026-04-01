@@ -72,7 +72,7 @@ const Remove = () => {
           Subcategory
           <select id="subcategory" required onChange={(e) => setSelectedSubcategory(e.target.value)}></select>
         </label>
-        <button id="saveExpenseBtn" type="submit">
+        <button id="generalBtn" type="submit" className="action-btn">
           Remove subcategory from DB
         </button>
       </form>

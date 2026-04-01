@@ -52,12 +52,12 @@ const Salaries = () => {
           Shimon's Salary:
           <input type="text" inputMode="numeric" pattern="-?[0-9]*" id="amount" value={shimonSalary} onChange={(e) => setShimonSalary(e.target.value)}/>
         </label>
-        <button onClick={(e) => handleSubmit(e, 'Shimon')} type="button" disabled={shimonSalary=='' || loading}>Update Shimon's Salary</button>
+        <button id="generalBtn" onClick={(e) => handleSubmit(e, 'Shimon')} type="button" className="action-btn" disabled={shimonSalary=='' || loading}>Update Shimon's Salary</button>
         <label>
           Havi's Salary:
           <input type="text" inputMode="numeric" pattern="-?[0-9]*" id="amount" value={haviSalary} onChange={(e) => setHaviSalary(e.target.value)}/>
         </label>
-        <button onClick={(e) => handleSubmit(e, 'Havi')} type="button" disabled={haviSalary=='' || loading}>Update Havi's Salary</button>
+        <button id="generalBtn" onClick={(e) => handleSubmit(e, 'Havi')} type="button" className="action-btn" disabled={haviSalary=='' || loading}>Update Havi's Salary</button>
         {loading && renderSmallLoading("Saving salary, please wait...")}
       </form>
       <div className="message" id="message" style={{ color }}>{message}</div>

@@ -98,8 +98,8 @@ const History = () => {
           </select>
         </label>
         <div style={{ marginTop: "10px" }}>
-          <button id="exportMonthToExcelBtn" type="button" onClick={() => exportMonthToExcel(selectedMonth)}>Export month to Excel file</button>
-          <button id="exportLogBtn" type="button" onClick={() => exportLogFile(selectedMonth)}>Export logs to Excel file</button>
+          <button id="exportMonthToExcelBtn" className="export-btn" type="button" onClick={() => exportMonthToExcel(selectedMonth)}>Export month to Excel file</button>
+          <button id="exportLogBtn" className="export-btn" type="button" onClick={() => exportLogFile(selectedMonth)}>Export logs to Excel file</button>
         </div>
         {loading ? (
           <>

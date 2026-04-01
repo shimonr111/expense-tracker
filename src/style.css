@@ -56,19 +56,10 @@ nav li a:hover {
   border-bottom: 3px solid #00c6ff;
 }
 
-label {
-  display: block;
-  margin-top: 15px;
-}
+
 .required {
   color: red;
   margin-left: 4px;
-}
-input, select, textarea {
-  width: 100%;
-  padding: 8px;
-  margin-top: 5px;
-  box-sizing: border-box;
 }
 button {
   margin-top: 20px;
@@ -98,36 +89,111 @@ button:disabled {
   align-items: center;
   white-space: nowrap;
 }
-#exportMonthToExcelBtn {
-  background-color: #217346; /* Excel green */
+
+/* Common style for all action buttons */
+.action-btn {
+  padding: 12px 24px;
+  font-size: 16px;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
   color: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+  text-align: center;
+  display: inline-block;
 }
-#exportLogBtn {
-  background-color: rgb(108, 21, 190); /* Excel green */
+
+/* Save / primary action button */
+#generalBtn {
+  background-color: #007bff; /* blue */
+}
+
+#generalBtn:hover {
+  background-color: #0056b3;  /* darker blue on hover */
+  transform: translateY(-2px); 
+  box-shadow: 0 6px 10px rgba(0,0,0,0.2);
+}
+
+/* Optional: focus style for accessibility */
+.action-btn:focus {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+
+/* Common style for export buttons */
+.export-btn {
+  padding: 12px 24px;
+  font-size: 16px;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;           /* Rounded corners */
   color: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15); /* subtle shadow */
+  text-align: center;
+  display: inline-block;
+}
+
+/* Excel Export button */
+#exportMonthToExcelBtn {
+  background-color: #217346;
+}
+
+#exportMonthToExcelBtn:hover {
+  background-color: #1b5836;  /* darker green on hover */
+  transform: translateY(-2px); /* small lift */
+  box-shadow: 0 6px 10px rgba(0,0,0,0.2);
+}
+
+/* Log Export button */
+#exportLogBtn {
+  background-color: rgb(108, 21, 190);
+}
+
+#exportLogBtn:hover {
+  background-color: rgb(85, 15, 160); /* darker purple */
+  transform: translateY(-2px);
+  box-shadow: 0 6px 10px rgba(0,0,0,0.2);
+}
+
+/* Optional: focus style for accessibility */
+.export-btn:focus {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
 }
 #version-label {
-      position: fixed;
-      bottom: 0;
-      left: 50%;
-      transform: translateX(-50%);
-      padding: 5px 10px 20px 10px; /* 5px top, 10px right, 20px bottom, 10px left */
-      background-color: #f0f0f0;
-      font-size: 14px;
-      color: #333;
-      border-top: 1px solid #ccc;
-      width: 100%;
-      text-align: center;
-      font-family: Arial, sans-serif;
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 6px 16px;        /* more balanced padding */
+  margin-bottom: 8px;       /* space from the bottom edge */
+  background-color: rgba(0, 0, 0, 0.7); /* semi-transparent dark background */
+  color: #fff;               /* white text for contrast */
+  font-size: 13px;           /* slightly smaller */
+  font-weight: 500;          /* medium weight */
+  border-radius: 12px;       /* rounded pill shape */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3); /* subtle shadow for depth */
+  width: auto;               /* adapt width to content */
+  text-align: center;
+  font-family: Arial, sans-serif;
+  z-index: 2000;             /* above other elements */
 }
 h1 {
   text-align: center;
-  color: #2c3e50;
-  font-size: 2.5rem;
-  margin-top: 20px;
-  margin-bottom: 30px;
-  text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+  font-size: 2.5rem;                /* maintain large size for titles */
+  margin: 30px 0 20px 0;            /* more balanced spacing top & bottom */
+  font-weight: 700;                  /* bold for emphasis */
+  color: #2563eb;                    /* a nice vibrant blue to match your buttons */
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  text-shadow: 1px 1px 4px rgba(0,0,0,0.2);  /* slightly stronger shadow for depth */
+  letter-spacing: 0.5px;             /* subtle spacing for elegance */
+  line-height: 1.2;                  /* tighter line spacing for large titles */
 }
+
 
 ul {
   list-style-type: none;
@@ -205,17 +271,22 @@ li a:hover {
 
 /* sidebar.css */
 .sidebar {
-  position: absolute; /* not fixed */
+  position: fixed;
   top: 0;
   left: 0;
-  height: 100%;
+  height: 100dvh;
   width: 150px;
   background-color: #111;
   color: white;
-  overflow-x: hidden;
-  padding-top: 20px;
+
+  padding-top: calc(env(safe-area-inset-top) + 10px);
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;   /* THIS centers the button */
+
   transition: transform 0.3s ease;
-  transform: translateX(-100%); /* hidden by default */
+  transform: translateX(-100%);
   z-index: 1000;
 }
 
@@ -236,21 +307,21 @@ li a:hover {
 }
 
 .close-btn {
-  position: relative;     /* position relative to sidebar */
-  left: 50%;              /* halfway across */
-  transform: translate(-50%, -50%); /* shift center of button to match coordinates */
-  width: 32px;
-  height: 32px;
+  width: 34px;
+  height: 34px;
   border: none;
   border-radius: 50%;
   background-color: #444;
   color: white;
-  font-size: 20px;
+  font-size: 18px;
+  font-weight: bold;
   cursor: pointer;
-  transition: background 0.3s, transform 0.2s;
+
   display: flex;
   align-items: center;
   justify-content: center;
+
+  margin-bottom: 15px; /* space before links */
 }
 
 .close-btn:hover {
@@ -372,6 +443,85 @@ input:checked + .slider::before {
 .label-text {
   user-select: none;
 }
+
+/* Base label styling */
+label {
+  display: block;                /* stack label and input */
+  margin-bottom: 10px;           /* spacing between fields */
+  font-size: 16px;               /* readable text */
+  font-weight: 500;              /* slightly bold */
+  color: #2c3e50;                /* dark text color */
+  font-family: Arial, sans-serif;
+}
+
+/* Required asterisk */
+label .required {
+  color: red;                     /* red asterisk for required fields */
+  margin-left: 4px;               /* spacing after text */
+  font-weight: bold;
+}
+
+/* Optional: label above checkbox with custom switch */
+label.switch {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 500;
+  color: #2c3e50;
+}
+
+/* Optional: smaller text for helper or notes */
+label small {
+  display: block;
+  font-size: 12px;
+  color: #666;
+  margin-top: 2px;
+}
+
+
+
+/* Base style for all inputs, textareas, selects */
+input, textarea, select {
+  width: 100%;                   /* full width */
+  padding: 10px 12px;            /* comfortable padding */
+  margin-top: 6px;               /* spacing from label */
+  margin-bottom: 12px;           /* spacing after input */
+  
+  font-size: 16px;                /* readable text */
+  font-family: Arial, sans-serif;
+  color: #333;                    /* text color */
+  
+  background-color: #f9f9f9;      /* light background */
+  border: 1px solid #ccc;         /* subtle border */
+  border-radius: 8px;             /* rounded corners */
+  
+  box-sizing: border-box;         /* include padding in width */
+  
+  transition: border 0.2s, box-shadow 0.2s; /* smooth focus effect */
+}
+
+/* Focus state */
+input:focus, textarea:focus, select:focus {
+  border-color: #007bff;           /* highlight border */
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.3); /* subtle glow */
+  outline: none;                   /* remove default outline */
+}
+
+/* Placeholder styling */
+input::placeholder, textarea::placeholder {
+  color: #999;                     /* lighter placeholder */
+  font-style: italic;
+}
+
+/* Optional: disabled inputs */
+input:disabled, textarea:disabled, select:disabled {
+  background-color: #e9ecef;
+  color: #6c757d;
+  cursor: not-allowed;
+}
+
 
 
 @keyframes spin {

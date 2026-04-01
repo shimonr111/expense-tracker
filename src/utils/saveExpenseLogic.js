@@ -4,9 +4,9 @@ import { addExpense } from "../api/expensesService.js";
 
 const form = document.getElementById('expenseForm');
 
-// Event listener for the button saveExpenseBtn which is submit type
+// Event listener for the button generalBtn which is submit type
 // Logic of updating the DB implemented here
-export async function submitExpense(formData, isFixedAmount, comment = null) {
+export async function submitExpense(formData, fixed_amount, comment = "") {
 
   // Initialize fields that will get stored in the DB for each subcategory later
   let amount = parseFloat(formData.amount);
@@ -26,8 +26,9 @@ export async function submitExpense(formData, isFixedAmount, comment = null) {
       subcategory,
       email :auth.currentUser.email,
       comment,
-      isFixedAmount
+      fixed_amount
     };
+    console.log(expenseData)
     const data = await addExpense(expenseData);
     if (!data) return;
 

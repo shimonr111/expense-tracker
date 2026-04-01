@@ -46,7 +46,7 @@ const Edit = () => {
       category: selectedCategory,
       subcategory: selectedSubcategory
     };
-    const success = await submitExpense(formData, true);
+    const success = await submitExpense(formData, true, "Update fixed amount");
     if (success) {
       e.target.reset();
       setAmountInput('');
@@ -79,7 +79,7 @@ const Edit = () => {
           {/*<input type="number" step="0.01" id="amount" required value={amountInput} onChange={(e) => setAmountInput(e.target.value)}/>*/}
           <input type="text" inputMode="numeric" pattern="-?[0-9]*" id="amount" required value={amountInput} onChange={(e) => setAmountInput(e.target.value)}/>
         </label>
-        <button id="saveExpenseBtn" type="submit">
+        <button id="generalBtn" type="submit" className="action-btn">
           Update amount
         </button>
       </form>

@@ -69,9 +69,9 @@ const Home = () => {
           <span className="slider"></span>
           <span className="label-text">Subtract the amount</span>
         </label>
-        <button id="saveExpenseBtn" type="submit">Save Expense</button>
-        <button id="exportMonthToExcelBtn" type="button" onClick={() => exportMonthToExcel(null)}>Export month to Excel file</button>
-        <button id="exportLogBtn" type="button" onClick={() => exportLogFile(null)}>Export logs to Excel file</button>
+        <button id="generalBtn" type="submit" className="action-btn">Save Expense</button>
+        <button id="exportMonthToExcelBtn" className="export-btn" type="button" onClick={() => exportMonthToExcel(null)}>Export month to Excel file</button>
+        <button id="exportLogBtn" className="export-btn" type="button" onClick={() => exportLogFile(null)}>Export logs to Excel file</button>
         {loading && renderSmallLoading("Saving expense, please wait...")}
       </form>
       <div className="message" id="message"></div>

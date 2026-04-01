@@ -113,7 +113,7 @@ const Insights = () => {
             placeholder="Ask about your expenses..."
             style={{ width: "100%", padding: "8px", fontSize: "16px" }}
           />
-          <button onClick={handleSendMessage}>Send</button>
+          <button id="generalBtn" className="action-btn" onClick={handleSendMessage}>Send</button>
         </div>
       </div>
       <div id="version-label">{Version}</div>

@@ -106,7 +106,7 @@ const Add = () => {
             <option value="false">False</option>
           </select>
         </label>
-        <button type="submit">Add Field</button>
+        <button id="generalBtn" type="submit" className="action-btn">Add Field</button>
       </form>
       <div className="message" id="message"></div>
       <div id="version-label">{Version}</div>

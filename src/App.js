@@ -33,6 +33,7 @@ const AppRoutes = React.memo(({ setSidebarOpen }) => {
       if (currentUser) { // If user is not null, check if the current user is allowed based on the data in the DB
         // Send POST request with the email to the Backend
         const firebaseToken = await currentUser.getIdToken(); // Get the firebase toekn of the current user
+        //console.log(firebaseToken)
         const data = await checkUser(firebaseToken); // Check if this user mail existed in DB based on the Firebase Token
 
         // Backend returns { allowed: true, token: "JWT_TOKEN" } if allowed
@@ -41,6 +42,8 @@ const AppRoutes = React.memo(({ setSidebarOpen }) => {
         if (allowed && token) {
           localStorage.setItem("jwtToken", token); // save token for future calls
         }
+
+        console.log(data)
         
         if (!allowed) {
         alert("You are not allowed to access this app.");
@@ -139,5 +142,5 @@ const App = () => {
   );
 };
 
-export const Version = "Version 1.0.64";
+export const Version = "Version 1.0.65";
 export default App;
