@@ -37,7 +37,7 @@ const Insights = () => {
         setApiKey(key);
         sessionStorage.setItem("apiKey", JSON.stringify(key));
 
-        const historyRef = ref(db, "history");
+        const historyRef = ref(db, "Shimon_Data/history");
         const snapshot = await get(historyRef);
 
         let data;

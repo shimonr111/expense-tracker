@@ -42,8 +42,6 @@ const AppRoutes = React.memo(({ setSidebarOpen }) => {
         if (allowed && token) {
           localStorage.setItem("jwtToken", token); // save token for future calls
         }
-
-        console.log(data)
         
         if (!allowed) {
         alert("You are not allowed to access this app.");
@@ -142,5 +140,5 @@ const App = () => {
   );
 };
 
-export const Version = "Version 1.0.65";
+export const Version = "Version 1.0.66";
 export default App;

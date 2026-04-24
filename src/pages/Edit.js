@@ -21,7 +21,7 @@ const Edit = () => {
       if (selectedCategory && selectedSubcategory) {
         try {
           const db = getDatabase();
-          const expenseRef = ref(db, `expenses/${selectedCategory}/${selectedSubcategory}`);
+          const expenseRef = ref(db, `Shimon_Data/expenses/${selectedCategory}/${selectedSubcategory}`);
           const snapshot = await get(expenseRef);
           if (snapshot.exists()) {
             const data = snapshot.val();

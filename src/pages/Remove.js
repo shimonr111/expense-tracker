@@ -37,7 +37,7 @@ const Remove = () => {
     if (!confirmed) return; // Stop if user clicks Cancel
 
     try {
-      await remove(ref(db, `expenses/${selectedCategory}/${selectedSubcategory}`));
+      await remove(ref(db, `Shimon_Data/expenses/${selectedCategory}/${selectedSubcategory}`));
       showMessage(`Subcategory ${selectedSubcategory} removed successfully`);
       // Remove session storage caches so other pages fetch fresh data
       sessionStorage.removeItem("categories_home");

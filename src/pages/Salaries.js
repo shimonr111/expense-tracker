@@ -26,7 +26,7 @@ const Salaries = () => {
 
     try {
       // Use update to only change the specified salary
-      await update(ref(db, 'Salaries'), {
+      await update(ref(db, 'Shimon_Data/Salaries'), {
         [name]: value
       });
       //setMessage(`${name.charAt(0).toUpperCase() + name.slice(1)}'s salary updated successfully!`);

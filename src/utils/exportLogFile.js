@@ -11,7 +11,7 @@ export async function exportLogFile(selectedMonth) {
       logRef = ref(db, "log");
     }
     else{
-      logRef = ref(db, `history/${selectedMonth}/log`);
+      logRef = ref(db, `Shimon_Data/history/${selectedMonth}/log`);
     }
     const snapshot = await get(logRef);
 

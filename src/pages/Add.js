@@ -24,7 +24,7 @@ const Add = () => {
 
 
     const fetchCategories = async () => {
-      const snapshot = await get(ref(db, 'expenses'));
+      const snapshot = await get(ref(db, 'Shimon_Data/expenses'));
       const data = snapshot.val();
       if (data) {
         setCategories(Object.keys(data));
@@ -43,7 +43,7 @@ const Add = () => {
       showMessage('Please fill all required fields.', true);
       return;
     }
-    const path = `expenses/${categoryToUse}/${subcategory}`;
+    const path = `Shimon_Data/expenses/${categoryToUse}/${subcategory}`;
     const [currentYear, currentMonth, currentTime] = getCurrentDateInfo();
     try {
       await set(ref(db, path), {

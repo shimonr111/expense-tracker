@@ -8,12 +8,12 @@ export function exportMonthToExcel(selectedMonth) {
   let expensesRef;
   let salariesRef;
   if (!selectedMonth) {
-    expensesRef = ref(db, "expenses");
-    salariesRef = ref(db, "Salaries");
+    expensesRef = ref(db, "Shimon_Data/expenses");
+    salariesRef = ref(db, "Shimon_Data/Salaries");
   }
   else{
-    expensesRef = ref(db, `history/${selectedMonth}/expenses`);
-    salariesRef = ref(db, `history/${selectedMonth}/Salaries`);
+    expensesRef = ref(db, `Shimon_Data/history/${selectedMonth}/expenses`);
+    salariesRef = ref(db, `Shimon_Data/history/${selectedMonth}/Salaries`);
   }
 
   Promise.all([get(expensesRef), get(salariesRef)])
