@@ -2,18 +2,24 @@ import { getMonthName, showMessage, updateMaxColumnWidths, getCurrentDateInfo} f
 import { db } from './firebase-config.js';  
 import { ref, get } from 'firebase/database';
 import * as XLSX from 'xlsx';
+import { fetchSalaries } from "../api/salariesService.js";
+import { fetchExpenses } from "../api/expensesService.js";
 
 // This function responsible to produce excel file report about the expenses, after 'Export month to Excel file' button clicked
-export function exportMonthToExcel(selectedMonth) {
+export async function exportMonthToExcel(selectedMonth) {
   let expensesRef;
   let salariesRef;
   if (!selectedMonth) {
     expensesRef = ref(db, "Shimon_Data/expenses");
     salariesRef = ref(db, "Shimon_Data/Salaries");
+    // Current month APIs
+    //[data, salaries] = await Promise.all([fetchExpenses(), fetchSalaries()]);
   }
   else{
     expensesRef = ref(db, `Shimon_Data/history/${selectedMonth}/expenses`);
     salariesRef = ref(db, `Shimon_Data/history/${selectedMonth}/Salaries`);
+    // History month APIs - TODO new api for data from the history
+    //[data, salaries] = await Promise.all([fetchExpenses(selectedMonth), fetchSalaries(selectedMonth)]);
   }
 
   Promise.all([get(expensesRef), get(salariesRef)])

@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { Version } from '../App.js';
 import { db } from '../utils/firebase-config.js';
-import { ref, get, set } from 'firebase/database';
+import { ref, set } from 'firebase/database';
 import { showMessage, getCurrentDateInfo } from '../utils/helpFunctions.js';
+import { fetchExpenses } from "../api/expensesService.js";
 
 // Add Page component
 const Add = () => {
@@ -22,10 +23,9 @@ const Add = () => {
       return;
     }
 
-
     const fetchCategories = async () => {
-      const snapshot = await get(ref(db, 'Shimon_Data/expenses'));
-      const data = snapshot.val();
+      const data = await fetchExpenses();
+      if (!data) return;
       if (data) {
         setCategories(Object.keys(data));
         sessionStorage.setItem("categories", JSON.stringify(Object.keys(data)));

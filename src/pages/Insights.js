@@ -4,6 +4,7 @@ import { getHuggingFaceKey, db } from '../utils/firebase-config.js';
 import { sendMessage, sendHistoryData } from '../utils/apiCalls.js';
 import { ref, get } from "firebase/database";
 import { renderSmallLoading } from '../utils/helpFunctions.js';
+import { fetchHistory } from "../api/historyService.js";
 
 // This component represents the "Insights" page
 const Insights = () => {
@@ -37,12 +38,8 @@ const Insights = () => {
         setApiKey(key);
         sessionStorage.setItem("apiKey", JSON.stringify(key));
 
-        const historyRef = ref(db, "Shimon_Data/history");
-        const snapshot = await get(historyRef);
-
-        let data;
-        if (snapshot.exists()) {
-          data = snapshot.val();
+        let data = await fetchHistory();
+        if (data){
           sessionStorage.setItem("historyData", JSON.stringify(data));
         } else {
           console.log("No history data available");

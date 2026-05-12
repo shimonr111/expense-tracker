@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Version } from '../App.js';
 import { db } from '../utils/firebase-config.js';
 import { ref, update } from 'firebase/database';
@@ -33,8 +33,9 @@ const Salaries = () => {
       //setError(false);
       showMessage(`${name}'s salary updated successfully!`, false); 
       // Clear cached values so Stats page fetches fresh data
-      sessionStorage.removeItem("totalSalaries");
-      sessionStorage.removeItem("profits");
+      //sessionStorage.removeItem("totalSalaries");
+      //sessionStorage.removeItem("profits");
+      sessionStorage.removeItem("statsData");
     } catch (err) {
       showMessage("Failed to update salary", true);
       //setMessage('Failed to update salary');

@@ -24,7 +24,7 @@ const provider = new GoogleAuthProvider();
 
 // Function to get HuggingFace API key from Firebase
 async function getHuggingFaceKey() {
-  const keyRef = ref(db, "openaiKey");
+  const keyRef = ref(db, "Shimon_Data/openaiKey");
   const snapshot = await get(keyRef);
   if (snapshot.exists()) {
     return snapshot.val();
