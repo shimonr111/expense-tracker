@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Version } from '../App.js';
 import { initializeCategoryDropdowns } from '../utils/loadCategories.js';
 import { submitExpense } from '../utils/saveExpenseLogic.js';
-import { getDatabase, ref, get } from 'firebase/database';
+import { getExpense } from "../api/expensesService.js";
 
 // Edit Page component
 const Edit = () => {
@@ -20,17 +20,10 @@ const Edit = () => {
     const fetchAmountFromFirebase = async () => {
       if (selectedCategory && selectedSubcategory) {
         try {
-          const db = getDatabase();
-          const expenseRef = ref(db, `Shimon_Data/expenses/${selectedCategory}/${selectedSubcategory}`);
-          const snapshot = await get(expenseRef);
-          if (snapshot.exists()) {
-            const data = snapshot.val();
-            setAmountInput(data.amount || '');
-          } else {
-            setAmountInput('');
-          }
-        } catch (error) {
-          console.error('Error fetching from Firebase:', error);
+          const data = await getExpense(selectedCategory, selectedSubcategory);
+          setAmountInput(data?.amount || '');
+        } catch (err) {
+          console.error(err);
           setAmountInput('');
         }
       }

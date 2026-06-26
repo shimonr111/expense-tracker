@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Version } from '../App.js';
-import { db } from '../utils/firebase-config.js';
-import { ref, set } from 'firebase/database';
+import { auth} from '../utils/firebase-config.js'
 import { showMessage, getCurrentDateInfo } from '../utils/helpFunctions.js';
-import { fetchExpenses } from "../api/expensesService.js";
+import { addExpense, fetchExpenses } from "../api/expensesService.js";
 
 // Add Page component
 const Add = () => {
@@ -43,18 +42,22 @@ const Add = () => {
       showMessage('Please fill all required fields.', true);
       return;
     }
-    const path = `Shimon_Data/expenses/${categoryToUse}/${subcategory}`;
-    const [currentYear, currentMonth, currentTime] = getCurrentDateInfo();
+  
+    
     try {
-      await set(ref(db, path), {
+      const expenseData = {
         amount: 0,
         category: categoryToUse,
         subcategory: subcategory,
-        year: currentYear,
-        month: currentMonth,
-        time: currentTime,
-        "fixed amount": isFixed
-      });
+        email :auth.currentUser.email,
+        comment: "",
+        fixed_amount: isFixed
+      };
+      console.log(expenseData)
+      const data = await addExpense(expenseData);
+      if (!data) return;
+
+
       showMessage(`Added ${subcategory} under ${categoryToUse} successfully.`);
       // Reset fields
       setNewCategory('');

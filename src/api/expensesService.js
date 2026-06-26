@@ -14,3 +14,10 @@ export async function addExpense(expenseData) {
     const response = await api.post("/expenses/add-expense", expenseData);
     return response.data;
 }
+
+export async function getExpense(category, subcategory) {
+    const response = await api.get("/expenses/get-expense", {
+        params: { category, subcategory }
+    });
+    return response.data;
+}
